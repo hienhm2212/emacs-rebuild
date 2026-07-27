@@ -1,0 +1,8 @@
+*~
+cache/
+backups/
+eln-cache/
+auto-save-list/
+auto-saves/
+elpa/
+custom.el
