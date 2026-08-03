@@ -7,6 +7,10 @@
   :ensure nil ; built-in
   :config (savehist-mode 1))
 
+(use-package recentf
+  :ensure nil
+  :config (recentf-mode 1))
+
 (use-package icomplete
   :ensure nil
   :config (fido-vertical-mode 1))
