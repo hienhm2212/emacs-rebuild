@@ -6,3 +6,8 @@ auto-save-list/
 auto-saves/
 elpa/
 custom.el
+
+history
+session.*
+\#*\#
+.#*

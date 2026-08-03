@@ -14,11 +14,7 @@
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 (require 'my-lib)
 (require 'my-ui)
-
-;; Add first package 
-(use-package savehist
-  :ensure nil ; built-in
-  :config (savehist-mode 1))
+(require 'my-completion)
   
 ;; Custom file setup
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
