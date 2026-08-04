@@ -2,7 +2,7 @@
 
 ;; Require package
 (require 'package)
-;; Add package 
+;; Add package
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
 ;; Set priority for packages
@@ -15,7 +15,8 @@
 (require 'my-lib)
 (require 'my-ui)
 (require 'my-completion)
-  
+(require 'my-coding)
+
 ;; Custom file setup
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
