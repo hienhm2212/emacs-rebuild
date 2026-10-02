@@ -10,14 +10,27 @@
 				   ("nongnu" . 2)
 				   ("melpa" . 1)))
 
-;; Load modules
-(add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
-(require 'my-lib)
-(require 'my-ui)
-(require 'my-completion)
-(require 'my-coding)
-
 ;; Custom file setup
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+;; Load modules
+(add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
+(require 'my-env) ; need load env first
+(require 'my-lib)
+(require 'my-ui)
+(require 'my-keys) ; leader maps, before modules that bind into them
+(require 'my-completion)
+(require 'my-coding)
+(require 'my-git)
+(require 'my-files)
+(require 'my-workspace)
+(require 'my-ruby)
+(require 'my-go)
+(require 'my-backend)
+(require 'my-frontend)
+(require 'my-yaml)
+(require 'my-markdown)
+(require 'my-org)
+

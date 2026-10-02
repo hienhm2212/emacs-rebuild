@@ -1,0 +1,624 @@
+#+TITLE: Lộ trình config Emacs — workflow mượt cho Ruby, Go, React
+#+DATE: 2026-09-15
+#+STARTUP: overview
+#+TODO: TODO DOING | DONE
+
+* Cách dùng file này
+- Làm *theo thứ tự giai đoạn*. Xong một giai đoạn, dùng quen vài ngày rồi mới sang giai đoạn sau.
+- Mỗi bài có: *mục tiêu*, *gợi ý*, *cách kiểm tra*. Không có code giải sẵn — tự tìm bằng =C-h f=, =C-h v=, README của package.
+- Sau mỗi bài: =emacs --debug-init= để chắc chắn không lỗi.
+- Nguyên tắc: *học theo việc cần làm*, không học theo package. Mỗi bài bắt đầu bằng câu "Mình muốn...".
+- Phím =C-c= + một chữ cái là *dành riêng cho người dùng* — dùng nó cho phím tắt tự đặt.
+
+* Tiến độ tổng [/]
+- [X] Giai đoạn 0 — Sửa lỗi config hiện tại ([[file:config-review.org][config-review.org]])
+- [ ] Giai đoạn 1 — Nền tảng
+- [X] Giai đoạn 2 — Tìm kiếm mọi thứ
+- [X] Giai đoạn 2B — Giao diện, file, không gian làm việc
+- [ ] Giai đoạn 3 — Code chung: đọc, nhảy, gợi ý, format
+- [ ] Giai đoạn 4 — Git và project
+- [X] Giai đoạn 5 — Ruby
+- [X] Giai đoạn 6 — Go
+- [X] Giai đoạn 7 — BE: API, database, debug
+- [X] Giai đoạn 8 — React (vừa code vừa học)
+- [ ] Giai đoạn 9 — AI
+- [ ] Giai đoạn 10 — Bộ phím riêng
+- [ ] Giai đoạn 11 — Org: ghi chú, việc cá nhân, devlog
+
+* DONE Giai đoạn 0 — Sửa lỗi config hiện tại
+Làm hết 11 bài trong [[file:config-review.org][config-review.org]] trước. Nền sạch thì các giai đoạn sau mới dễ debug.
+
+* TODO Giai đoạn 1 — Nền tảng
+** DONE 1.1 Mình muốn quên phím thì có gợi ý
+- Mục tiêu :: Bấm =C-x= rồi chờ, hiện menu các phím tiếp theo.
+- Gợi ý :: =which-key= có sẵn từ Emacs 30. =C-h f which-key-mode=.
+- Kiểm tra :: Bấm =C-x p= rồi chờ 1 giây.
+
+** DONE 1.2 Mình muốn lặp lệnh mà không bấm lại cả tổ hợp
+- Mục tiêu :: =C-x o o o= để chuyển qua lại nhiều cửa sổ.
+- Gợi ý :: =repeat-mode= (có sẵn). =C-h f repeat-mode=.
+- Kiểm tra :: Chia 3 cửa sổ (=C-x 2=, =C-x 3=), thử =C-x o o=.
+
+** DONE 1.3 Mình muốn file tự cập nhật khi thay đổi bên ngoài
+- Mục tiêu :: =git checkout= sang nhánh khác, buffer tự cập nhật.
+- Gợi ý :: =global-auto-revert-mode=.
+
+** DONE 1.4 Mình muốn các cặp ngoặc tự đóng
+- Gợi ý :: =electric-pair-mode=. So sánh thêm =show-paren-mode= (thường đã bật sẵn).
+
+** TODO 1.5 Mình muốn biết phím nào gọi lệnh gì
+- Đây là kỹ năng, không phải config. Luyện:
+  - [ ] =C-h k= rồi bấm một phím → xem lệnh nào chạy.
+  - [ ] =C-h f= tên lệnh → xem phím tắt của nó.
+  - [ ] =C-h m= → xem mọi phím của mode hiện tại.
+  - [ ] =C-h l= → xem 100 phím vừa bấm.
+
+** Ghi chú của mình
+
+* DONE Giai đoạn 2 — Tìm kiếm mọi thứ
+Đây là bước làm workflow "mượt" lên rõ nhất — tương đương Telescope / snacks picker.
+
+** DONE 2.0 Mình muốn có "leader key" riêng ngay từ đầu
+Đây là điều làm LazyVim mượt: phím được nhóm theo nghĩa, không phải nhớ. Làm *trước* 2.1,
+sau đó cứ cài package nào là gán phím vào nhóm đó luôn (không đợi tới giai đoạn 10).
+- Mục tiêu :: =C-c f= là nhóm "tìm", =C-c c= là nhóm "code", =C-c g= là nhóm "git"... bấm =C-c= chờ thấy which-key hiện tên nhóm.
+- Gợi ý :: =defvar-keymap= tạo keymap con, =keymap-set= gắn vào =C-c f=. Tên nhóm cho which-key: =which-key-add-key-based-replacements=.
+- Gợi ý chỗ để :: tạo module mới =modules/my-keys.el=, =require= nó *cuối cùng* trong =init.el=.
+- Kiểm tra :: =C-c= → chờ → thấy danh sách nhóm có tên.
+
+** DONE 2.1 Mình muốn danh sách chọn đẹp và nhanh hơn =fido=
+- Gợi ý :: Cài =vertico=. Nhớ *tắt* =fido-vertical-mode= trong [[file:../modules/my-completion.el][my-completion.el]] — hai cái không nên chạy cùng.
+- Kiểm tra :: =M-x= hiện danh sách dọc.
+
+** DONE 2.2 Mình muốn gõ từ khoá không cần đúng thứ tự
+- Mục tiêu :: Gõ =user con= tìm được =controllers/users_controller.rb=.
+- Gợi ý :: =orderless=. Đọc README về =completion-styles= và =completion-category-overrides=.
+
+** DONE 2.3 Mình muốn thấy mô tả bên cạnh mỗi lựa chọn
+- Gợi ý :: =marginalia=.
+- Kiểm tra :: =M-x= thấy docstring bên cạnh tên lệnh; =C-x b= thấy mode, kích thước buffer.
+
+** DONE 2.4 Mình muốn tìm chữ trong cả project, xem trước kết quả
+- Gợi ý :: =consult= + cài =ripgrep= (=rg=). Lệnh =consult-ripgrep=.
+- Kiểm tra :: Tìm tên một method Ruby trong project, di chuyển lên xuống thấy xem trước file.
+
+** DONE 2.5 Mình muốn chuyển buffer / file gần đây trong một lệnh
+- Gợi ý :: =consult-buffer=. Cân nhắc gán nó thay =C-x b=.
+
+** DONE 2.6 Mình muốn nhảy tới hàm/method trong file hiện tại
+- Gợi ý :: =consult-imenu=, =consult-outline=. Thử trong file Go và Ruby dài.
+
+** DONE 2.7 Mình muốn tìm dòng trong file đang mở
+- Gợi ý :: =consult-line=. So sánh với =isearch= (=C-s=) — mỗi cái hợp lúc nào?
+
+** DONE 2.8 (Nâng cao) Mình muốn làm hành động khác trên kết quả tìm kiếm
+- Mục tiêu :: Từ kết quả =consult-ripgrep=, xuất ra buffer rồi sửa hàng loạt ở nhiều file.
+- Gợi ý :: =embark= (=embark-act=, =embark-export=) + =wgrep=.
+
+** Ghi chú của mình
+*** Phím đã gán — luyện 1 tuần
+Config: [[file:../modules/my-keys.el][my-keys.el]] (nhóm phím), [[file:../modules/my-completion.el][my-completion.el]] (package).
+| Phím        | Lệnh                    | Dùng khi                                  |
+|-------------+-------------------------+-------------------------------------------|
+| C-c f f     | project-find-file       | mở file trong project                     |
+| C-c f r     | consult-recent-file     | file vừa mở                               |
+| C-c f g     | consult-ripgrep         | tìm chữ cả project (cần =rg=)             |
+| C-c f l     | consult-line            | tìm dòng trong file                       |
+| C-c f i     | consult-imenu           | nhảy tới hàm/method                       |
+| C-c f o     | consult-outline         | nhảy tới heading (org, markdown)          |
+| C-c f b     | consult-buffer          | buffer + file gần đây                     |
+| C-c f p     | consult-project-buffer  | buffer của project                        |
+| C-x b       | consult-buffer          | thay lệnh cũ                              |
+| M-y         | consult-yank-pop        | chọn từ lịch sử copy                      |
+| M-g g / M-g i | goto-line / imenu     |                                           |
+| C-.         | embark-act              | menu hành động trên lựa chọn hiện tại     |
+| C-. E       | embark-export           | xuất kết quả ripgrep ra buffer            |
+| C-c C-p     | wgrep (trong buffer grep) | sửa nhiều file, =C-c C-c= lưu           |
+| C-h B       | embark-bindings         | tìm phím bất kỳ                           |
+| C-c c r/a/f | eglot rename/action/format |                                        |
+| C-c c d/n/p | lỗi: danh sách/tiếp/trước  |                                        |
+- Trong vertico: =M-RET= nhận đúng chữ đã gõ; =TAB= điền tiếp; gõ =!chữ= trong orderless để loại trừ.
+- Terminal Emacs không nhận =C-.= — dùng GUI hoặc gán thêm phím khác.
+
+* DONE Giai đoạn 2B — Giao diện, file, không gian làm việc
+Phần "nhìn gọn, thao tác gọn" của craftzdog: oil.nvim, lualine, tmux session.
+Config: [[file:../modules/my-ui.el][my-ui.el]] (cuộn, font, mode-line), [[file:../modules/my-files.el][my-files.el]] (dired), [[file:../modules/my-workspace.el][my-workspace.el]] (tab, terminal).
+
+** DONE 2B.1 Mình muốn sửa thư mục như sửa text (giống oil.nvim)
+- Gợi ý :: =dired= (=C-x d=, =C-x C-j= mở thư mục của file hiện tại). Trong dired bấm =C-x C-q= (=wdired=): đổi tên nhiều file bằng cách sửa chữ, =C-c C-c= để lưu.
+- Tìm hiểu :: =dired-dwim-target= (copy/move sang cửa sổ bên cạnh), =dired-kill-when-opening-new-dired-buffer=, =dired-listing-switches= (thử =-alh --group-directories-first=).
+- macOS :: cần =gls= (=brew install coreutils=) để dùng =--group-directories-first=. Đã xử lý ở [[file:../modules/my-env.el][my-env.el]].
+- Kiểm tra :: Đổi tên 3 file cùng lúc bằng wdired.
+- Phím trong dired :: =RET= mở, =^= lên thư mục cha, =(= hiện/ẩn chi tiết, =+= tạo thư mục, =C-x C-f= tạo file, =R= đổi tên/di chuyển, =C= copy, =D= xoá (vào thùng rác), =m= / =u= đánh dấu / bỏ, =g= làm mới.
+- Luồng giống oil :: =C-x C-j= → =C-x C-q= → sửa tên như sửa text → =C-c C-c= lưu (=C-c C-k= huỷ).
+
+** DONE 2B.2 Mình muốn cuộn mượt và font đẹp
+- Gợi ý :: =pixel-scroll-precision-mode= (có sẵn). Font: =set-face-attribute= với face =default=, =:height=.
+- Lưu ý :: font khác tên giữa Linux và macOS — dùng =find-font= + =font-spec= để chọn font có sẵn.
+- Kiểm tra :: Cuộn bằng touchpad trên macOS không bị giật theo dòng.
+- Đã làm :: font lấy cái đầu tiên có trong máy từ =my/fonts= (JetBrains Mono → Menlo → DejaVu). Muốn đổi: sửa danh sách đó, cỡ chữ ở =:height= (140 mac, 120 Linux).
+- Cài font :: macOS =brew install --cask font-jetbrains-mono-nerd-font=; Ubuntu =apt install fonts-jetbrains-mono=.
+
+** DONE 2B.3 Mình muốn mode-line gọn (giống lualine)
+- Bước 1 (không cài) :: tìm hiểu =mode-line-format=, =display-time-mode=, =column-number-mode=. Ẩn bớt tên minor mode: package =minions=.
+- Bước 2 (tuỳ chọn) :: =doom-modeline= (cần =nerd-icons=, chạy =M-x nerd-icons-install-fonts=).
+- Đã làm :: Bước 1 (=column-number-mode= + =minions=: các minor mode gom vào menu =;-)=). Bước 2 để sau nếu muốn.
+
+** DONE 2B.4 Mình muốn mỗi project một "không gian" (thay tmux session)
+- Gợi ý :: =tab-bar-mode=. Nhóm phím =C-x t= (=C-x t 2= tab mới, =C-x t o= chuyển, =C-x t r= đổi tên).
+- Tìm hiểu :: =project-switch-project= kết hợp tab: mỗi project mở trong một tab riêng. Xem =tab-bar-show=.
+- Kiểm tra :: Mở 2 project ở 2 tab, chuyển qua lại mà bố cục cửa sổ giữ nguyên.
+- Đã làm :: =C-c o p= (=my/project-tab=): chọn project → mở trong tab mang tên project (đã có thì chuyển sang). Sau đó chọn lệnh project (=f= tìm file, =g= tìm chữ, =m= magit...).
+- Phím :: =C-x t o= / =C-TAB= tab kế, =C-x t 0= đóng tab, =C-c <left>= / =C-c <right>= lùi/tiến bố cục cửa sổ của tab.
+
+** DONE 2B.5 Mình muốn bật/tắt terminal nhanh
+- Gợi ý :: =eat= (chạy tốt cả Linux và macOS, không cần biên dịch như =vterm=). Hoặc =C-x p s= / =project-eshell= có sẵn.
+- Gán phím vào nhóm =C-c o= (open).
+- Đã làm :: =C-c o t= terminal ở gốc project (mở lại đúng cái cũ), =C-c o T= terminal ở thư mục hiện tại.
+- Trong eat :: =C-c C-e= chuyển sang phím Emacs (copy, cuộn, tìm), =C-c C-j= quay về phím terminal. Quay lại code: =C-x b= (hoặc =C-x o= nếu chia cửa sổ).
+
+** DONE 2B.6 Mình muốn dark theme
+- Đã làm :: [[file:../modules/my-ui.el][my-ui.el]] — mặc định tối (=modus-vivendi-tinted=), sáng là =modus-operandi-tinted=. Cả hai có sẵn trong Emacs.
+- Theo hệ điều hành :: =auto-dark= tự đổi khi macOS / GNOME / KDE đổi sáng–tối (chỉ GUI). Không muốn thì xoá khối =use-package auto-dark=.
+- Phím nhóm =C-c u= (ui) :: =C-c u t= đổi sáng/tối, =C-c u l= bật/tắt số dòng, =C-c u w= bật/tắt xuống dòng mềm.
+- Thử theme khác :: đổi =my/theme-dark= / =my/theme-light=. Xem thử nhanh: =M-x consult-theme= (di chuyển là xem trước).
+  | Theme                | Package        | Giống                                |
+  |----------------------+----------------+--------------------------------------|
+  | doom-tokyo-night     | =doom-themes=  | tokyonight — theme mặc định LazyVim  |
+  | solarized-dark       | =solarized-theme= | gần Solarized Osaka của craftzdog |
+  | ef-night, ef-dream   | =ef-themes=    | cùng tác giả modus, nhiều màu hơn    |
+  | modus-vivendi        | có sẵn         | tương phản cao nhất, dễ đọc nhất     |
+- Lưu ý :: theme ngoài phải cài package trước (=use-package ... :ensure t=), rồi mới đặt tên vào =my/theme-dark=.
+- Lựa chọn của mình :: modus hoặc ef — =ef-themes= đã cài sẵn. Ví dụ đổi sang ef: =my/theme-dark= → =ef-night=, =my/theme-light= → =ef-day=.
+
+** Ghi chú của mình
+
+* TODO Giai đoạn 3 — Code chung: đọc, nhảy, gợi ý, format
+** TODO 3.1 Mình muốn nhảy tới định nghĩa rồi quay lại
+- Kỹ năng, không cần cài: =M-.= tới định nghĩa, =M-?= tìm chỗ dùng, =M-,= quay lại.
+- Kiểm tra :: Trong project Go, nhảy vào một hàm 3 tầng rồi quay về chỗ cũ.
+
+** TODO 3.2 Mình muốn xem kiểu / tài liệu của thứ dưới con trỏ
+- Gợi ý :: =eldoc= (có sẵn, eglot dùng). Thử =eldoc-doc-buffer=. Tìm hiểu =eldoc-box= nếu muốn popup.
+
+** DONE 3.3 Mình muốn menu gợi ý tự hiện khi gõ
+- Gợi ý :: =corfu=. Đọc về =corfu-auto=, =corfu-auto-delay=. Thêm =corfu-popupinfo-mode= để xem tài liệu.
+- Kiểm tra :: Gõ =fmt.Pr= trong file Go → menu tự hiện.
+- Thử trước khi cài :: =C-M-i= (gợi ý có sẵn, không tự hiện).
+- Phím trong popup :: =C-n= / =C-p= chọn, =RET= hoặc =TAB= nhận, =C-g= đóng, =M-SPC= chèn dấu cách để gõ thêm từ khoá orderless.
+- Lưu ý :: popup dùng child frame → chỉ hiện trên GUI. Emacs trong terminal (=-nw=) cần thêm package =corfu-terminal= (Emacs 31 hỗ trợ sẵn).
+
+** DONE 3.4 Mình muốn thấy lỗi ngay tại dòng code
+- Gợi ý :: =flymake= (eglot dùng sẵn). Tìm hiểu =flymake-show-diagnostics-at-end-of-line=, =flymake-goto-next-error=, =consult-flymake=.
+- Kiểm tra :: Viết sai cú pháp trong Go → thấy lỗi ngay.
+- Phím :: =M-n= / =M-p= lỗi tiếp/trước (khi flymake bật), =C-c c d= danh sách lỗi (consult-flymake).
+- Tuỳ chỉnh :: =flymake-show-diagnostics-at-end-of-line= — ='short= (dòng đầu của lỗi), =t= (đầy đủ), =nil= (tắt).
+
+** TODO 3.5 Mình muốn đổi tên, sửa nhanh bằng LSP
+- Gợi ý :: =eglot-rename=, =eglot-code-actions=. Gán phím dưới =C-c c ...=.
+
+** TODO 3.6 Mình muốn nhảy nhanh tới chỗ bất kỳ trên màn hình
+- Gợi ý :: =avy= — =avy-goto-char-timer=.
+
+** TODO 3.7 Mình muốn snippet (gõ tắt → cả đoạn code)
+- Gợi ý :: =yasnippet= (eglot tự dùng khi có) + =yasnippet-snippets=. Hoặc nhẹ hơn: =tempel=.
+
+** Ghi chú của mình
+
+* TODO Giai đoạn 4 — Git và project
+** TODO 4.1 Mình muốn làm việc theo project
+- Kỹ năng :: nhóm phím =C-x p=. Luyện:
+  - [ ] =C-x p p= đổi project
+  - [ ] =C-x p f= tìm file
+  - [ ] =C-x p g= tìm chữ (so sánh với =consult-ripgrep=)
+  - [ ] =C-x p b= buffer của project
+  - [ ] =C-x p k= đóng hết buffer của project
+
+** DONE 4.2 Mình muốn dùng git không rời Emacs
+- Gợi ý :: =magit=, =C-x g=. Trong magit bấm =?= để xem mọi phím.
+- Luyện :: stage từng đoạn (hunk), commit, push, rebase, xem blame (=magit-blame=).
+
+** DONE 4.3 Mình muốn thấy dòng nào đã thay đổi ở lề
+- Gợi ý :: =diff-hl=. Đọc README về kết hợp với magit.
+- Lưu ý :: lề (fringe) chỉ có trên GUI. Emacs trong terminal cần =diff-hl-margin-mode=.
+
+** Ghi chú của mình
+*** Phím git đã gán ([[file:../modules/my-git.el][my-git.el]])
+| Phím            | Lệnh                   | Dùng khi                                  |
+|-----------------+------------------------+-------------------------------------------|
+| C-x g / C-c g g | magit-status           | màn hình chính (giống lazygit)            |
+| C-c g b         | magit-blame-addition   | ai sửa dòng này, =q= để thoát             |
+| C-c g l         | magit-log-buffer-file  | lịch sử của file hiện tại                 |
+| C-c g f         | magit-file-dispatch    | menu git cho file hiện tại                |
+| C-c g n / p     | diff-hl next/prev hunk | nhảy tới đoạn đã sửa                      |
+| C-c g s         | diff-hl-show-hunk      | xem diff của đoạn tại con trỏ             |
+| C-c g r         | diff-hl-revert-hunk    | bỏ thay đổi của đoạn đó                   |
+| C-x p m         | magit-project-status   | magit khi đổi project (=C-x p p= rồi =m=) |
+- Trong magit-status: =s= stage, =u= unstage, =TAB= mở diff, =c c= commit (=C-c C-c= xong), =P p= push, =F p= pull, =b b= đổi nhánh, =?= xem mọi phím.
+- Stage một phần: mở diff bằng =TAB=, chọn vùng (=C-SPC=) rồi =s=.
+
+* DONE Giai đoạn 5 — Ruby
+Config: [[file:../modules/my-ruby.el][my-ruby.el]] (rspec, console), [[file:../modules/my-coding.el][my-coding.el]] (ruby-lsp, format), [[file:../modules/my-env.el][my-env.el]] (envrc).
+
+** DONE 5.1 LSP cho Ruby chạy đúng
+- Gợi ý :: =ruby-lsp= (gem). Kiểm tra =eglot-server-programs= có dùng nó không (=C-h v eglot-server-programs=).
+- Kiểm tra :: Mở file =.rb=, =M-x eglot-events-buffer= xem server nào đang chạy.
+- Đã làm :: ép eglot dùng =ruby-lsp= cho =ruby-ts-mode=.
+- Cài :: =gem install ruby-lsp= (qua mise: cài cho mỗi phiên bản Ruby project dùng). Không cần thêm vào =Gemfile= — ruby-lsp tự tạo bundle riêng trong =.ruby-lsp/= (thêm vào =.gitignore= global).
+
+** DONE 5.2 Mình muốn rubocop tự format và báo lỗi
+- Gợi ý :: =ruby-lsp= đã tích hợp rubocop. Tìm hiểu =eglot-format-buffer= và =before-save-hook= (chỉ bật trong =ruby-ts-mode=, dùng hook cục bộ).
+
+- Đã làm :: [[file:../modules/my-coding.el][my-coding.el]] — =my/eglot-format-on-save=. Chỉ chạy khi eglot đang bật, lỗi không chặn việc lưu.
+- Lưu ý :: ruby-lsp chỉ dùng rubocop nếu =rubocop= có trong =Gemfile= của project; nếu không nó dùng formatter riêng. File cũ chưa từng chạy rubocop sẽ bị đổi nhiều → commit riêng.
+- Tắt tạm cho một buffer :: =M-: (remove-hook 'before-save-hook #'my/eglot-format-on-save t)=
+
+** DONE 5.3 Mình muốn chạy test hiện tại
+- Bước 1 (không cài) :: =C-x p c= với =bundle exec rspec path/to/file_spec.rb=.
+- Bước 2 :: =rspec-mode= hoặc =minitest= tuỳ project. Tìm lệnh chạy test tại con trỏ.
+- Kiểm tra :: Test lỗi → =RET= trên dòng lỗi mở đúng file.
+- Đã làm :: =rspec-mode=, phím trong file Ruby:
+  | Phím    | Lệnh                         | Dùng khi                          |
+  |---------+------------------------------+-----------------------------------|
+  | C-c t t | rspec-verify-single          | chạy spec tại con trỏ             |
+  | C-c t f | rspec-verify                 | chạy spec của file này            |
+  | C-c t a | rspec-verify-all             | chạy cả bộ test                   |
+  | C-c t r | rspec-rerun                  | chạy lại lệnh vừa rồi             |
+  | C-c t l | rspec-run-last-failed        | chỉ chạy các spec vừa lỗi         |
+  | C-c t s | rspec-toggle-spec-and-target | =user.rb= ↔ =user_spec.rb=        |
+- Trong buffer kết quả :: =M-g n= / =M-g p= nhảy lỗi, =RET= mở file, =g= chạy lại.
+- Debug :: đặt =debugger= hoặc =binding.irb= trong code → chạy spec → gõ lệnh ngay tại prompt trong buffer kết quả (=inf-ruby-auto-enter=).
+- Nếu project dùng minitest :: cài thêm =minitest= (package), đừng bật cả hai trên cùng project.
+
+** DONE 5.4 Mình muốn mở =rails console= / =irb= trong Emacs
+- Gợi ý :: =inf-ruby=. Tìm hiểu =inf-ruby-console-auto=, gửi đoạn code sang REPL.
+- Đã làm :: =C-c o r= mở console đúng loại project (Rails → =rails console=, có Gemfile → =bundle console=, còn lại =irb=).
+- Gửi code từ file =.rb= :: =C-c C-r= vùng chọn, =C-c C-e= method tại con trỏ, =C-c C-l= load cả file, =C-c C-z= nhảy qua lại console.
+
+** DONE 5.5 Mình muốn biến môi trường đúng theo project
+- Gợi ý :: =envrc= + =direnv=. mise hỗ trợ direnv — đọc tài liệu mise.
+- Đã làm :: =envrc-global-mode= (chỉ bật khi máy có =direnv=).
+- Cài :: macOS =brew install direnv=, Ubuntu =apt install direnv=. Trong project: tạo =.envrc= (ví dụ =export DATABASE_URL=...=) rồi =direnv allow=.
+- Phiên bản Ruby/Go :: đã đúng nhờ mise shims (đọc =.mise.toml= / =.tool-versions= theo thư mục), không cần direnv cho việc này.
+- Đổi =.envrc= :: =M-x envrc-reload=.
+
+** Ghi chú của mình
+
+* DONE Giai đoạn 6 — Go
+Config: [[file:../modules/my-go.el][my-go.el]], format/import khi lưu ở [[file:../modules/my-coding.el][my-coding.el]].
+
+** DONE 6.1 Mình muốn tự format + sắp xếp import khi lưu
+- Gợi ý :: gopls làm được cả hai. Tìm hiểu =eglot-format-buffer= và code action =source.organizeImports= (=C-h f eglot-code-actions=).
+- Chỉ bật trong =go-ts-mode=.
+
+** DONE 6.2 Mình muốn chạy test ở hàm hiện tại
+- Bước 1 :: =C-x p c= → =go test ./... -run TestTen=.
+- Bước 2 :: Tự viết một hàm nhỏ: lấy tên hàm dưới con trỏ rồi gọi =compile=.
+  Gợi ý: =treesit-defun-name=, =treesit-defun-at-point=, =compile=.
+  Đây là bài tập Emacs Lisp đầu tiên rất tốt — đặt vào [[file:../modules/my-lib.el][my-lib.el]].
+- Đã làm :: Emacs 30 có sẵn lệnh test trong =go-ts-mode=, gán cùng bộ phím với Ruby:
+  | Phím    | Lệnh                              | Dùng khi                           |
+  |---------+-----------------------------------+------------------------------------|
+  | C-c t t | go-ts-mode-test-function-at-point | test tại con trỏ (hoặc trong vùng) |
+  | C-c t f | go-ts-mode-test-this-file         | mọi test trong file                |
+  | C-c t p | go-ts-mode-test-this-package      | cả package                         |
+  | C-c t a | my/go-test-all                    | =go test ./...= ở gốc project      |
+  | C-c t r | recompile                         | chạy lại lệnh vừa rồi              |
+  | C-c t s | find-sibling-file                 | =foo.go= ↔ =foo_test.go=           |
+- Bài tập (khi rảnh) :: vẫn nên tự viết Bước 2, rồi so với =C-h f go-ts-mode-test-function-at-point= → nhảy vào source xem Emacs viết thế nào.
+- Lỗi test :: đã thêm regexp =go-test= để =M-g n= / =RET= nhảy đúng dòng lỗi (=foo_test.go:12=).
+
+** DONE 6.3 Mình muốn thấy gợi ý kiểu ngay trong dòng
+- Gợi ý :: =eglot-inlay-hints-mode=. Bật/tắt khi cần.
+- Đã làm :: bật hint trong gopls qua =eglot-workspace-configuration= (tên tham số, kiểu biến, kiểu =range=...). Bật/tắt: =C-c c h=.
+- Đổi cấu hình gopls khi eglot đang chạy :: =M-x eglot-reconnect=.
+
+** DONE 6.4 Mình muốn chuyển nhanh giữa file và file test
+- Gợi ý :: =find-sibling-file= (có sẵn, Emacs 29+) và =find-sibling-rules=.
+- Thử áp dụng cho cả Go (=foo.go= ↔ =foo_test.go=) và Ruby (=app/models/user.rb= ↔ =spec/models/user_spec.rb=).
+- Đã làm :: Go qua =find-sibling-rules= (=C-c t s=); Ruby dùng =rspec-toggle-spec-and-target= (cũng =C-c t s=).
+
+** Ghi chú của mình
+
+* DONE Giai đoạn 7 — BE: API, database, debug
+Config: [[file:../modules/my-backend.el][my-backend.el]].
+
+** DONE 7.1 Mình muốn dùng =compile= thành thạo
+- Kỹ năng :: =C-x p c=, =g= chạy lại, =M-g n= / =M-g p= nhảy lỗi, =C-u C-x p c= để chạy lệnh kiểu tương tác.
+- Tìm hiểu :: =compilation-scroll-output=.
+- Đã làm :: tự cuộn theo output, hiện màu ANSI (không còn =^[[32m=). Phần kỹ năng thì luyện tay.
+
+** DONE 7.2 Mình muốn gọi thử API như Postman
+- Gợi ý :: =verb= — viết request ngay trong file Org. Hoặc =restclient=.
+- Bài tập :: Tạo =api.org= cho một project, lưu các request hay dùng.
+- Đã làm :: =C-c o a= mở =api.org= ở gốc project. Mẫu:
+  #+begin_example
+  * My API                                                  :verb:
+  template http://localhost:3000/api/v1
+  Content-Type: application/json
+  Authorization: Bearer {{(getenv "API_TOKEN")}}
+
+  ** List users
+  get /users
+
+  ** Create user
+  post /users
+
+  {"name": "An", "email": "an@example.com"}
+  #+end_example
+- Phím (con trỏ trong heading request) :: =C-c C-r C-r= gửi, hiện kết quả bên cạnh; =C-c C-r C-f= gửi, kết quả cùng cửa sổ; =C-c C-r C-k= đóng các buffer kết quả; =C-c C-r C-u= xuất lệnh =curl=.
+- Token :: đặt trong =.envrc= (direnv) rồi đọc bằng =(getenv ...)= như mẫu — không ghi token vào file.
+
+** DONE 7.3 Mình muốn truy vấn database
+- Gợi ý :: =sql-mode= + =sql-postgres= / =sql-mysql= (có sẵn). Tìm hiểu =sql-connection-alist=.
+- Không lưu mật khẩu trong config — tìm hiểu =auth-source=.
+- Đã làm :: =C-c o s= (=sql-connect=) chọn kết nối đã lưu. Bảng rộng không bị xuống dòng.
+- Lưu kết nối :: =M-x customize-variable RET sql-connection-alist= (được lưu vào =custom.el=, không lên git). Mỗi kết nối, ví dụ:
+  #+begin_example
+  (myapp-dev (sql-product 'postgres) (sql-server "localhost") (sql-port 5432)
+             (sql-user "postgres") (sql-database "myapp_development"))
+  #+end_example
+- Mật khẩu :: Postgres dùng =~/.pgpass= (=host:port:db:user:password=, =chmod 600=), MySQL dùng =~/.my.cnf=. psql/mysql tự đọc, Emacs không cần biết.
+- Viết query :: mở file =.sql=, =C-c C-c= gửi đoạn hiện tại, =C-c C-r= gửi vùng chọn, =C-c C-b= gửi cả file (cần đã kết nối).
+- Không cần lưu :: =M-x sql-postgres=, ô database có thể dán cả URL =postgres://user@host/db=.
+
+** DONE 7.4 Mình muốn chạy server dev và xem log
+- Gợi ý :: =eat= hoặc =vterm=. Thử =C-x p s= trước (shell có sẵn).
+- Đã có :: =C-c o t= terminal ở gốc project → =bin/rails server= / =go run .=. Muốn thêm terminal thứ hai: =C-u C-c o t=.
+- Xem log :: mở =log/development.log= rồi =M-x auto-revert-tail-mode= → tự cuộn khi có dòng mới (như =tail -f=).
+
+** DONE 7.5 Mình muốn đặt breakpoint, xem biến
+- Gợi ý :: =dape=. Go dùng =dlv=, Ruby dùng =rdbg= (gem =debug=).
+- Để cuối giai đoạn — cần hiểu =compile= và project trước.
+- Đã làm :: nhóm phím =C-c d= (bấm rồi chờ để which-key hiện đủ). Hay dùng: =C-c d d= bắt đầu, =C-c d b= đặt/bỏ breakpoint, =C-c d n= dòng tiếp, =C-c d s= vào hàm, =C-c d o= ra khỏi hàm, =C-c d c= chạy tiếp, =C-c d q= dừng. Nhờ =repeat-mode=: =C-c d n n n=.
+- Cài :: Go =go install github.com/go-delve/delve/cmd/dlv@latest=; Ruby thêm gem =debug= (Rails 7 có sẵn).
+- Dùng :: =C-c d d= → chọn cấu hình (=dlv=, =rdbg=...) → sửa lệnh trong minibuffer nếu cần → =RET=. Xem các cấu hình có sẵn và tham số của chúng: =C-h v dape-configs=.
+- Lần đầu :: thử với một file Go nhỏ (=dlv=), đặt breakpoint trong =main= — dễ nhất để hiểu luồng. Ruby/rspec làm sau.
+
+** DONE 7.6 Mình muốn sửa file / chạy lệnh trên server
+- Gợi ý :: =tramp= (có sẵn). =C-x C-f /ssh:user@host:/path=.
+- Kiểm tra :: Mở project trên server, =C-x p c= có chạy lệnh trên server không?
+- Đã làm :: tramp dùng PATH của login shell trên server (=tramp-own-remote-path=) → thấy được mise, go, ruby trên server.
+- Mẹo :: dùng tên host trong =~/.ssh/config= (ví dụ =/ssh:halo:~/emacs=). Quyền root: =/ssh:halo|sudo::/etc/nginx=.
+
+** Ghi chú của mình
+
+* DONE Giai đoạn 8 — React (vừa code vừa học)
+Vì bạn chưa rành React, dùng Emacs như *công cụ đọc hiểu code* trước, viết code sau.
+
+Config: [[file:../modules/my-frontend.el][my-frontend.el]], snippet ở [[file:../snippets/][snippets/]], Prettier ở [[file:../modules/my-coding.el][my-coding.el]].
+
+** Cài một lần (Linux + macOS, qua mise/npm)
+#+begin_example
+npm i -g typescript typescript-language-server vscode-langservers-extracted
+#+end_example
+- =vscode-langservers-extracted= cho LSP của CSS/SCSS, HTML, JSON (kiểm tra =package.json=, =tsconfig.json= theo schema).
+- ESLint, Prettier, jest/vitest: dùng bản trong =node_modules= của project (=npm install= trong project). Config tự thêm =node_modules/.bin= vào PATH của từng buffer.
+- Grammar YAML mới: =M-x my/treesit-install-all=.
+
+** DONE 8.1 LSP cho TS/TSX chạy đúng
+- Gợi ý :: =typescript-language-server= (npm). Đã hook =tsx-ts-mode= ở [[file:../modules/my-coding.el][my-coding.el]]. Kiểm tra lại bảng mode ở bài 6 của config-review.
+- Kiểm tra :: Mở =.tsx=, =M-.= trên tên component nhảy đúng file.
+- Đã làm thêm :: =.jsx= mở bằng =js-ts-mode=; CSS/SCSS/HTML/JSON cũng có LSP; YAML dùng =yaml-ts-mode=.
+- YAML breadcrumb :: [[file:../modules/my-yaml.el][my-yaml.el]] — đầu cửa sổ hiện đường dẫn key tại con trỏ (=spec.containers[0].image=), =C-c c y= copy đường dẫn. Tự viết bằng tree-sitter — đọc file này để hiểu cách đi cây cú pháp (=treesit-node-at=, =treesit-node-parent=).
+
+** DONE 8.2 Mình muốn Prettier tự format khi lưu
+- Gợi ý :: =apheleia=. Nó dùng Prettier của project (=node_modules=) nếu có.
+
+- Đã làm :: =apheleia-mode= bật cho js/ts/tsx/json/css. Chạy *sau* khi lưu, không làm chậm. Không có prettier trong project thì nó tìm =prettier= global.
+- Tắt tạm :: =M-x apheleia-mode=. Xem lỗi: buffer =*apheleia-prettier-...-log*=.
+
+** DONE 8.3 Mình muốn thấy lỗi ESLint
+- Gợi ý :: =flymake-eslint=. Lưu ý: Eglot chỉ chạy *một* LSP mỗi buffer, nên ESLint đi đường riêng qua flymake.
+- Đã làm :: bật sau khi eglot khởi động (=eglot-managed-mode-hook=), chỉ khi tìm thấy =eslint= (ưu tiên =node_modules/.bin=). Lỗi ESLint và lỗi TypeScript hiện chung: cuối dòng, =M-n= / =M-p=, =C-c c d=.
+- Không thấy lỗi ESLint :: project đã =npm install= chưa? Chạy tay =npx eslint src/App.tsx= xem có lỗi config không.
+
+** DONE 8.3b Mình muốn chạy test jest / vitest
+- Đã làm :: tự chọn =vitest= nếu có trong =package.json=, không thì =jest=. Cùng phím với Ruby/Go:
+  | Phím    | Tác dụng                                          |
+  |---------+---------------------------------------------------|
+  | C-c t t | test gần nhất phía trên con trỏ (=it= / =test= / =describe=) |
+  | C-c t f | cả file test                                      |
+  | C-c t a | cả bộ test                                        |
+  | C-c t r | chạy lại                                          |
+  | C-c t s | =Button.tsx= ↔ =Button.test.tsx= (hoặc =.spec=)   |
+- Chạy script khác (=npm run dev=, =npm run build=) :: =C-c o t= mở terminal, hoặc =C-x p c=.
+
+** DOING 8.4 Mình muốn hiểu component đang đọc
+- Kỹ năng (quan trọng nhất cho người mới React) ::
+  - [ ] =M-.= trên component → xem nó định nghĩa ở đâu, nhận props gì
+  - [ ] =M-?= → xem component được dùng ở những đâu
+  - [ ] =eldoc= trên biến → xem kiểu (ví dụ =useState= trả về gì)
+  - [ ] =consult-ripgrep= tìm =useContext=, =useEffect= → xem project dùng pattern nào
+  - [ ] =consult-imenu= → xem cấu trúc một file component
+- Bài tập :: Chọn một màn hình trong app, vẽ cây component của nó vào mục ghi chú bên dưới.
+
+** DONE 8.5 Mình muốn snippet React
+- Gợi ý :: =yasnippet-snippets= có sẵn snippet cho TS/React. Hoặc tự viết: =rfc=, =useState=, =useEffect=.
+- Tự viết snippet giúp nhớ cú pháp React nhanh hơn.
+- Đã làm :: =yasnippet= + =yasnippet-snippets=, và vài snippet tự viết trong =snippets/= — *mở ra đọc*, mỗi file là một mẫu cú pháp React:
+  | Gõ rồi TAB | Ra                                        | Có trong           |
+  |------------+-------------------------------------------+--------------------|
+  | rfc        | component + kiểu Props (tên = tên file)   | .tsx               |
+  | us         | =const [x, setX] = useState()=            | .ts .tsx .js .jsx  |
+  | ue         | =useEffect(() => {}, [])=                 | .ts .tsx .js .jsx  |
+  | uc         | =useCallback=                             | .ts .tsx .js .jsx  |
+  | um         | =useMemo=                                 | .ts .tsx .js .jsx  |
+  | clg        | =console.log("x", x)=                     | .ts .tsx .js .jsx  |
+- Trong snippet :: =TAB= sang ô tiếp theo, =S-TAB= quay lại. Ở =us=: gõ tên biến, =setX= tự đổi theo.
+- Tự thêm :: =M-x yas-new-snippet= → viết → =C-c C-c= lưu vào =snippets/<mode>/=. Xem mọi snippet: =M-x yas-describe-tables=.
+
+** DONE 8.6 (Tuỳ chọn) Tailwind / Emmet / màu
+- Gợi ý :: =emmet-mode=, =colorful-mode=. Tailwind LSP cần chạy nhiều LSP — để sau.
+- Đã làm :: Emmet trong HTML/CSS/JSX: gõ =div.card>ul>li*3= rồi =C-j= (JSX tự dùng =className=). Màu =#ff0000= / =rgb()= hiện đúng màu trong CSS/HTML/TSX.
+- Tailwind :: chưa có (eglot một server mỗi buffer). Nếu cần gợi ý class Tailwind, tìm hiểu =eglot= + =rassumfrassum= (gộp nhiều LSP) hoặc =lsp-mode= — để sau.
+
+** DONE 8.7 Mình muốn viết Markdown (README, docs, ghi chú PR)
+- Đã làm :: [[file:../modules/my-markdown.el][my-markdown.el]] — =.md= mở bằng =gfm-mode= (GitHub: bảng, =```code```=, =- [ ]=).
+- Code block được tô màu theo ngôn ngữ (=```go=, =```tsx=, =```yaml=...).
+- Phím hay dùng ::
+  | Phím             | Tác dụng                                          |
+  |------------------+---------------------------------------------------|
+  | C-c '            | sửa code block trong buffer riêng, =C-c C-c= trả về |
+  | C-c C-c l        | xem trước bản render bên cạnh (cần =pandoc=)      |
+  | C-c C-c p        | mở bản render trong trình duyệt (cần =pandoc=)    |
+  | C-c C-l          | chèn / sửa link                                   |
+  | C-c C-x C-x      | bật/tắt checkbox =- [ ]=                          |
+  | C-c C-n / C-c C-p | heading tiếp / trước                            |
+  | C-c C-o          | mở link tại con trỏ                               |
+  | C-c f o          | nhảy tới heading (consult-outline)                |
+  | TAB / S-TAB      | gập / mở heading                                  |
+- Cài thêm (tuỳ chọn) :: =pandoc= để xem trước (=brew install pandoc= / =apt install pandoc=); =marksman= để có LSP (link giữa file, cảnh báo link hỏng) — config tự bật eglot khi thấy nó.
+- Format :: không tự chạy Prettier cho =.md= (tránh đổi cả file README của team). Cần thì =M-x apheleia-format-buffer=.
+
+** Ghi chú của mình
+*** Cây component đã vẽ
+
+* TODO Giai đoạn 9 — AI
+Để giai đoạn này sau cùng, khi đã phân biệt được gợi ý nào từ LSP, gợi ý nào từ AI.
+
+** TODO 9.1 Mình muốn gợi ý code dạng chữ xám
+- Gợi ý :: =copilot.el= (cần tài khoản GitHub Copilot). Hoặc =minuet= nếu muốn dùng model khác.
+- Chú ý phím =TAB= xung đột với corfu / yasnippet — tự quyết định phím nhận gợi ý.
+
+** TODO 9.2 Mình muốn hỏi AI về đoạn code đang đọc
+- Gợi ý :: =gptel=. Chọn vùng code rồi hỏi.
+- Rất hợp để học React: chọn một component → "giải thích component này, props, state, effect".
+- Không đưa API key vào config — dùng =auth-source=.
+
+** Ghi chú của mình
+
+* TODO Giai đoạn 10 — Bộ phím riêng
+Làm cuối cùng, khi đã biết mình hay dùng lệnh nào nhất.
+
+** TODO 10.1 Liệt kê lệnh dùng nhiều
+- Gợi ý :: =M-x keyfreq= (package) hoặc tự ghi chép 1 tuần.
+
+** TODO 10.2 Thiết kế nhóm phím
+Điền bảng rồi mới viết config:
+| Nhóm   | Ý nghĩa    | Lệnh ví dụ                         |
+|--------+------------+------------------------------------|
+| C-c f  | tìm (find) | consult-ripgrep, consult-line      |
+| C-c c  | code       | eglot-rename, eglot-code-actions   |
+| C-c g  | git        | magit-status, magit-blame          |
+| C-c t  | test       | chạy test file, test tại con trỏ   |
+| C-c o  | mở (open)  | terminal, api.org                  |
+|        |            |                                    |
+
+- Gợi ý :: =keymap-set=, =define-keymap=, =defvar-keymap= (Emacs 29+). Mô tả nhóm cho which-key: =which-key-add-key-based-replacements=.
+
+** Ghi chú của mình
+
+* TODO Giai đoạn 11 — Org: ghi chú, việc cá nhân, devlog
+Config: [[file:../modules/my-org.el][my-org.el]]. Nhóm phím =C-c n= (notes).
+Quyết định (2026-09-30): đồng bộ bằng *git repo riêng*, Org chỉ cho *việc cá nhân*, không chấm công, điện thoại để sau.
+
+** Luồng
+#+begin_example
+ Đang code ──C-c n c──▶ inbox.org ──(mỗi sáng, C-c C-w)──▶ tasks.org
+                                                              │
+ Tối / hôm sau ◀── journal (hôm qua làm gì) ◀── C-c n d ◀─────┘
+#+end_example
+- *Ghi nhanh rồi quay lại code ngay* — không phân loại lúc ghi. Phân loại (refile) để dành buổi sáng.
+- Tuần đầu chỉ dùng: =C-c n c=, =C-c n d=, =C-c n j=. Denote / Babel để tuần sau.
+
+** TODO 11.1 Tạo repo =~/org= (làm một lần)
+#+begin_example
+# máy đầu tiên
+mkdir -p ~/org/notes && cd ~/org
+printf '#+title: Inbox\n' > inbox.org
+printf '#+title: Tasks\n* Personal\n* Learning\n* Projects\n' > tasks.org
+printf '#+title: Journal\n' > journal.org
+touch notes/.keep
+git init && git add -A && git commit -m init
+# tạo repo *private* trên GitHub/GitLab rồi:
+git remote add origin git@github.com:<you>/org.git && git push -u origin main
+
+# máy thứ hai
+git clone git@github.com:<you>/org.git ~/org
+#+end_example
+- Kiểm tra :: =C-c n d= mở dashboard không báo lỗi thiếu file.
+
+** TODO 11.2 Mình muốn ghi nhanh không rời code
+- Phím :: =C-c n c= rồi:
+  | Phím | Ghi gì                             | Vào đâu               |
+  |------+------------------------------------+-----------------------|
+  | t    | task, *kèm link tới dòng code đang mở* | inbox.org         |
+  | j    | một dòng devlog, có giờ            | journal, ngày hôm nay |
+  | m    | họp: người dự / quyết định / việc  | journal, ngày hôm nay |
+  | l    | link đọc sau (dán từ clipboard)    | inbox.org             |
+  | n    | ghi chú kiến thức (hỏi tiêu đề + từ khoá) | file mới trong notes/ |
+  | b    | điều tra bug (khung Symptom → Fix, *kèm link dòng code*) | file mới trong notes/ |
+- Trong buffer capture :: =C-c C-c= lưu, =C-c C-k= huỷ (file ghi chú rỗng tự bị xoá), =C-c C-w= lưu thẳng vào chỗ khác.
+- Ở =b= :: nhớ gõ từ khoá =bug= khi được hỏi (có gợi ý sẵn), để sau này lọc được mọi ghi chú bug.
+- Tự sửa / thêm template :: [[file:../modules/my-org.el][my-org.el]], biến =org-capture-templates=. Các ký hiệu: =%?= chỗ con trỏ, =%U= thời điểm, =%a= link tới chỗ đang đứng, =%x= clipboard, =%^{Topic}= hỏi một giá trị, =%<%H:%M>= giờ hiện tại. Đọc thêm: =C-h v org-capture-templates=.
+- Bài tập :: tự thêm một template =r= "Retro tuần" vào journal: 3 mục /Tốt/, /Chưa tốt/, /Tuần sau/.
+- Kiểm tra :: Đang ở dòng 42 file Go, =C-c n c t=, gõ "refactor hàm này", =C-c C-c=. Mở inbox (=C-c n o=), =RET= trên link → nhảy về đúng dòng 42.
+
+** TODO 11.3 Mình muốn xem hôm nay làm gì
+- =C-c n d= dashboard: lịch hôm nay + việc đã xong hôm nay, NEXT, WAIT, inbox chưa phân loại.
+- Trạng thái :: =TODO= → =NEXT= (sắp làm) → =DONE=; =WAIT= (chờ người khác, hỏi lý do), =CANCELLED=. Đổi: =C-c C-t= rồi chữ cái.
+- Ngày :: =C-c C-s= lịch làm (scheduled), =C-c C-d= hạn chót (deadline).
+- Trong agenda :: =t= đổi trạng thái, =RET= mở, =l= bật/tắt log, =f= / =b= ngày sau/trước, =w= xem tuần, =r= làm mới.
+- Phân loại inbox :: trong inbox.org, trên heading bấm =C-c C-w= → chọn =tasks.org/Personal= ...
+
+** TODO 11.4 Mình muốn devlog hằng ngày
+- =C-c n j= mở ngày hôm nay trong journal.org (tự tạo Năm > Tháng > Ngày). Hoặc =C-c n c j= ghi một dòng từ bất cứ đâu.
+- Thói quen :: cuối ngày ghi 3 dòng: làm gì, vướng gì, mai làm gì.
+- Tìm lại :: =C-c n s= tìm chữ trong toàn bộ =~/org= (có xem trước).
+
+** TODO 11.5 Mình muốn ghi chú kiến thức (Go, Rails, React...)
+- =C-c n n= ghi chú mới: nhập tiêu đề + từ khoá (=go=, =react=, =til=...). File tên kiểu =20260930T101500--goroutine-leak__go_bug.org=.
+- =C-c n b= ghi chú điều tra bug, có sẵn khung: Symptom / Reproduce / Root cause / Fix / Links.
+- =C-c n f= tìm ghi chú theo tên/từ khoá, =C-c n i= chèn link tới ghi chú khác, =C-c n r= đổi tên/từ khoá.
+- Trong code, =C-c l= (lưu link dòng code) → trong ghi chú =C-c C-l= dán link. Ghi chú bug luôn trỏ đúng chỗ code.
+- Học React :: mỗi khái niệm (=useEffect=, context, props) một ghi chú =react=, tự viết lại bằng lời mình + ví dụ nhỏ.
+
+** TODO 11.6 Mình muốn chạy code ngay trong ghi chú
+- Khối code: gõ =<s= rồi =TAB= (hoặc =C-c C-,=), chọn =src=, ghi ngôn ngữ (=shell=, =sql=, =ruby=, =js=, =emacs-lisp=).
+- =C-c C-c= trong khối → chạy, kết quả hiện ngay bên dưới. Emacs sẽ hỏi xác nhận trước khi chạy (an toàn).
+- SQL :: thêm =:engine postgresql :dbhost localhost :database myapp_dev= vào dòng =#+begin_src sql=.
+- Gọi API :: dùng =verb= như bài 7.2 — cũng là file Org.
+
+** TODO 11.7 Mình muốn đồng bộ giữa các máy
+- =C-c n g= :: lưu hết file Org → =git commit= → =pull --rebase= → =push=. Kết quả hiện trong buffer =*compilation*=.
+- Thói quen :: =C-c n g= khi bắt đầu và khi kết thúc làm việc trên mỗi máy.
+- Xung đột :: hiếm nếu sync đều. Nếu có: =C-x g= (magit) trong =~/org= để xử lý như code.
+
+** TODO 11.8 (Sau) Xem trên điện thoại
+- Android :: *Orgzly Revived* — đồng bộ trực tiếp với git repo. Khai báo trạng thái TODO/NEXT/WAIT/DONE/CANCELLED trong app cho khớp.
+- iOS :: *beorg* không hỗ trợ git → dùng app *Working Copy* (git) + mở file bằng beorg qua Files.
+- Lưu ý :: điện thoại cũng commit → luôn =C-c n g= (có pull) trước khi sửa trên máy tính.
+
+** Bảng phím =C-c n=
+| Phím    | Lệnh                  | Dùng khi                           |
+|---------+-----------------------+------------------------------------|
+| C-c n c | org-capture           | ghi nhanh                          |
+| C-c n d | dashboard (agenda)    | hôm nay làm gì                     |
+| C-c n a | org-agenda            | các kiểu agenda khác               |
+| C-c n j | journal hôm nay       | devlog                             |
+| C-c n o | mở inbox.org          | phân loại                          |
+| C-c n s | tìm chữ trong ~/org   | tìm lại ghi chú, devlog            |
+| C-c n n | denote                | ghi chú kiến thức mới              |
+| C-c n b | ghi chú bug           | điều tra bug                       |
+| C-c n f | tìm / tạo ghi chú     |                                    |
+| C-c n i | chèn link ghi chú     |                                    |
+| C-c n r | đổi tên / từ khoá     |                                    |
+| C-c n g | git sync ~/org        | đầu / cuối buổi                    |
+| C-c l   | lưu link (dòng code)  | dán bằng =C-c C-l= trong Org       |
+
+** Ghi chú của mình
+
+* Ghi chú macOS
+- Cài Emacs: =brew install --cask emacs= hoặc =emacs-plus= (tap =d12frosted/emacs-plus=). Chọn bản 30 trở lên.
+- Phím: Option = Meta, Command = Super, Right Option giữ nguyên để gõ ký tự đặc biệt — đã đặt trong [[file:../modules/my-env.el][my-env.el]].
+- Build grammar tree-sitter cần compiler: =xcode-select --install=. Grammar trên mac là file =.dylib= (đã có trong =.gitignore=) — chạy lại =M-x my/treesit-install-all= trên mỗi máy.
+- Cài công cụ: =brew install ripgrep coreutils fd=.
+- PATH: GUI app trên mac không đọc =~/.zshrc= → =exec-path-from-shell= lo phần này; mise shims được thêm tay.
+
+* Tài liệu tham khảo
+- Manual có sẵn: =C-h r= (Emacs manual), =C-h i= (mọi manual, gồm Eglot, Flymake, Org)
+- Protesilaos Stavrou — tác giả modus-themes, video và bài viết rất sâu
+- System Crafters — series "Emacs From Scratch"
+- Đọc config Doom Emacs để xem cách ghép package (đọc, không cần cài)
+- Kênh craftzdog — xem để lấy ý tưởng *việc cần làm*, rồi tìm cách làm trong Emacs

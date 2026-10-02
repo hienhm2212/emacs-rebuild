@@ -12,3 +12,12 @@ session.*
 \#*\#
 .#*
 recentf.*
+
+eshell/
+projects.eld
+tree-sitter/*.so
+tramp
+auto-saves/
+tree-sitter/*.dylib
+.DS_Store
+transient/

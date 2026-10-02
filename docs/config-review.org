@@ -1,0 +1,175 @@
+#+TITLE: Review cấu hình Emacs — bài tập tự sửa
+#+DATE: 2026-09-15
+#+STARTUP: overview
+#+TODO: TODO DOING | DONE
+
+* Cách dùng file này
+- Mỗi bài có: *chỗ sửa*, *lý do*, *gợi ý*, *cách kiểm tra*.
+- Bấm =TAB= trên tiêu đề để mở/đóng, =C-c C-t= để đổi trạng thái =TODO= → =DOING= → =DONE=.
+- Tick checkbox bằng =C-c C-c=.
+- Ghi chú những gì bạn quan sát được vào mục *Ghi chú của mình* ở mỗi bài.
+
+** Mẹo chung
+- Chạy =emacs --debug-init= sau mỗi lần sửa để thấy ngay lỗi nằm ở đâu.
+- Đặt con trỏ cuối một biểu thức rồi =C-x C-e= để chạy thử, không cần khởi động lại.
+- =C-h v= xem biến, =C-h f= xem hàm, =C-h o= xem cả hai.
+- Xem cảnh báo lúc khởi động trong buffer =*Warnings*= và =*Messages*=.
+
+* Tiến độ [11/11]
+- [X] Bài 1 — Header sai tên file
+- [X] Bài 2 — Thứ tự =custom-file=
+- [X] Bài 3 — =gc-cons-threshold= không đặt lại
+- [X] Bài 4 — Theme không load
+- [X] Bài 5 — Tắt thanh công cụ trong =early-init.el=
+- [X] Bài 6 — Tree-sitter mở sai mode
+- [X] Bài 7 — =exec-path-from-shell= chạy mọi lúc
+- [X] Bài 8 — File backup =~= rải rác
+- [X] Bài 9 — =.gitignore=
+- [X] Bài 10 — Grammar tree-sitter chưa cố định phiên bản
+- [X] Bài 11 — Cho Emacs dùng thư mục này
+
+* DONE Bài 1 — Header sai tên file                                       :dễ:
+- Chỗ sửa :: [[file:../modules/my-env.el::1][modules/my-env.el:1]]
+- Lý do :: Dòng đầu ghi =my-ui.el=, do copy từ file khác sang mà quên đổi.
+- Kiểm tra :: Mở file đó, chạy =M-x checkdoc=. Lệnh này kiểm tra header, footer và docstring.
+
+** Ghi chú của mình
+
+* DONE Bài 2 — Thứ tự đặt =custom-file=                              :dễ:bug:
+- Chỗ sửa :: [[file:../init.el::21][init.el:21-24]] so với [[file:../init.el::15][init.el:15-19]]
+- Lý do :: Các module được load trước. Khi =use-package ... :ensure t= cài
+  package, Emacs lưu =package-selected-packages= bằng Customize. Lúc đó
+  =custom-file= chưa được đặt, nên nó ghi thẳng vào =init.el=.
+  - Gợi ý :: Chỉ cần đổi thứ tự hai khối code.
+- Tìm hiểu :: =C-h v custom-file=, =C-h f package--save-selected-packages=
+- Kiểm tra :: Trên máy mới (hoặc xoá =elpa/= để thử), khởi động rồi xem
+  =init.el= có bị thêm khối =custom-set-variables= không.
+
+** Ghi chú của mình
+
+* DONE Bài 3 — =gc-cons-threshold= không được đặt lại                   :vừa:
+- Chỗ sửa :: [[file:../early-init.el::13][early-init.el:13]]
+- Lý do :: Tăng ngưỡng giúp khởi động nhanh. Nhưng giữ mãi 100 MB thì mỗi
+  lần dọn bộ nhớ, Emacs sẽ khựng lâu.
+- Gợi ý ::
+  - Tìm hiểu =emacs-startup-hook= (=C-h v emacs-startup-hook=).
+  - Dùng =add-hook= với một =lambda= để =setq= lại giá trị nhỏ hơn
+    (thường khoảng 16 MB).
+- Kiểm tra :: Khởi động xong, =C-h v gc-cons-threshold= xem giá trị đã đổi chưa.
+- Đọc thêm :: Package =gcmh= (trên MELPA, không có sẵn) giải quyết đúng vấn
+  đề này — tìm hiểu để so sánh với cách tự làm.
+
+** Ghi chú của mình
+
+* DONE Bài 4 — Theme không load                                     :vừa:bug:
+- Chỗ sửa :: [[file:../modules/my-ui.el::7][modules/my-ui.el:7-9]]
+- Lý do :: =use-package modus-themes= sẽ =require= feature =modus-themes=.
+  Theme có sẵn của Emacs nằm trong =etc/themes/=, không có trong =load-path=,
+  nên =require= có thể thất bại và =:config= bị bỏ qua.
+- Kiểm tra *trước khi sửa* :: Khởi động Emacs, mở =*Warnings*= và =*Messages*=,
+  tìm dòng "Cannot load". Ghi lại bạn thấy gì bên dưới.
+- Gợi ý :: =load-theme= không cần =require=. Có thực sự cần =use-package= ở đây không?
+- Tìm hiểu :: =C-h v custom-theme-load-path=, =C-h f load-theme=
+
+** Ghi chú của mình
+
+* DONE Bài 5 — Tắt thanh công cụ trong =early-init.el=                 :vừa:
+- Chỗ sửa :: [[file:../early-init.el::8][early-init.el:8-10]]
+- Lý do ::
+  1. Bản Emacs build không có GUI (=emacs-nox=) không có =scroll-bar-mode= → lỗi.
+  2. Gọi mode lúc này thì frame đã được vẽ → thanh công cụ nháy lên rồi mới biến mất.
+- Gợi ý ::
+  - Tìm hiểu =default-frame-alist= (=C-h v default-frame-alist=).
+  - Các key: =menu-bar-lines=, =tool-bar-lines=, =vertical-scroll-bars=.
+  - Tham khảo thêm =fboundp= nếu vẫn muốn gọi hàm mode.
+
+** Ghi chú của mình
+
+* DONE Bài 6 — Tree-sitter mở sai mode                                  :khó:
+- Chỗ sửa :: [[file:../modules/my-coding.el::16][modules/my-coding.el:16-20]]
+- Lý do ::
+  - =typescript-mode= không có sẵn trong Emacs → dòng remap không bao giờ khớp.
+  - Go, Rust không có mode cũ để remap, nên cần cách khác để Emacs biết mở
+    =.go=, =.rs= bằng =*-ts-mode=.
+  - =.js= có thể được gắn với tên =javascript-mode= (alias), không khớp key =js-mode=.
+- Kiểm tra :: Mở lần lượt file =.go=, =.rs=, =.ts=, =.tsx=, =.js=, =.sh=, =.rb=,
+  gõ =C-h v major-mode= và điền bảng dưới.
+- Gợi ý :: So sánh =auto-mode-alist= với =major-mode-remap-alist=. Hai biến
+  giải quyết hai việc khác nhau.
+
+| Đuôi file | Mode mong muốn     | Mode thực tế |
+|-----------+--------------------+--------------|
+| .go       | go-ts-mode         |              |
+| .rs       | rust-ts-mode       |              |
+| .ts       | typescript-ts-mode |              |
+| .tsx      | tsx-ts-mode        |              |
+| .js       | js-ts-mode         |              |
+| .sh       | bash-ts-mode       |              |
+| .rb       | ruby-ts-mode       |              |
+
+** Ghi chú của mình
+
+* DONE Bài 7 — =exec-path-from-shell= chạy mọi lúc                    :vừa:
+- Chỗ sửa :: [[file:../modules/my-env.el::7][modules/my-env.el:7-9]]
+- Lý do :: Mỗi lần khởi động nó mở một login shell để đọc =PATH=. Chạy Emacs
+  trong terminal thì =PATH= đã đúng sẵn → tốn thời gian vô ích.
+- Gợi ý :: Tìm hiểu =window-system= và =daemonp=. Dùng =when= hoặc từ khoá
+  =:if= của =use-package=.
+- Kiểm tra :: =M-x emacs-init-time= trước và sau khi sửa (chạy trong terminal).
+
+** Ghi chú của mình
+
+* DONE Bài 8 — File backup =~= rải rác                                   :dễ:
+- Chỗ sửa :: Thêm vào một module, ví dụ [[file:../modules/my-lib.el][modules/my-lib.el]] (đang trống).
+- Lý do :: =init.el~=, =custome.el~=... nằm lẫn với file thật. =.gitignore= có
+  =backups/= nhưng chưa có gì trỏ tới đó.
+- Gợi ý :: =C-h v backup-directory-alist=. Thêm: =auto-save-file-name-transforms=
+  cho file =#...#=.
+- Sau khi sửa :: Xoá tay các file =~= cũ.
+
+** Ghi chú của mình
+
+* DONE Bài 9 — =.gitignore=                                              :dễ:
+- Chỗ sửa :: [[file:../.gitignore][.gitignore]]
+- Với mỗi mục, tự hỏi "có nên đưa lên git không, vì sao?":
+  - [ ] =tramp=
+  - [ ] =eshell/=
+  - [ ] =projects.eld=
+  - [ ] =tree-sitter/*.so= (gợi ý: file build theo từng máy/hệ điều hành)
+  - [ ] =.gitignore~= (đã bị =*~= bắt chưa?)
+
+** Ghi chú của mình
+
+* DONE Bài 10 — Grammar tree-sitter chưa cố định phiên bản            :khó:
+- Chỗ sửa :: [[file:../modules/my-coding.el::7][modules/my-coding.el:7-14]]
+- Lý do :: Grammar lấy từ =master= / nhánh mặc định. Bản mới thường không
+  khớp với query font-lock của Emacs → lỗi "invalid node type" hoặc mất màu.
+- Gợi ý ::
+  - =C-h v treesit-language-source-alist= xem định dạng: =(LANG URL REVISION SOURCE-DIR)=.
+  - Xem tag release trên GitHub của từng grammar, chọn bản phù hợp với phiên bản Emacs.
+  - =M-x emacs-version= để biết mình đang dùng bản nào.
+
+** Ghi chú của mình
+
+* DONE Bài 11 — Cho Emacs dùng thư mục này                               :dễ:
+- Tình trạng :: Trên server, =~/.emacs.d= và =~/.config/emacs= chưa tồn tại →
+  Emacs không đọc =~/emacs=.
+- Gợi ý (chọn một) ::
+  - Symlink tới =~/.config/emacs=.
+  - Option =--init-directory= (Emacs 29+).
+- Kiểm tra :: Trong Emacs, =C-h v user-emacs-directory=.
+
+** Ghi chú của mình
+
+* Ngoài lề — Eglot cần language server
+Eglot chỉ là client, cần có server trong =PATH=:
+| Ngôn ngữ   | Server                     | Đã cài? |
+|------------+----------------------------+---------|
+| Go         | gopls                      |         |
+| Rust       | rust-analyzer              |         |
+| Ruby       | ruby-lsp / solargraph      |         |
+| JS/TS      | typescript-language-server |         |
+| Bash       | bash-language-server       |         |
+
+Kiểm tra: =M-: (executable-find "gopls")=. Nếu cài qua mise thì shims trong
+=my-env.el= đã lo phần =PATH=.

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: console.log with label
+# key: clg
+# --
+console.log("${1:value}", $1);
