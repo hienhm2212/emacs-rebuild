@@ -5,11 +5,14 @@
 ;; 1. Agents (agent-shell): a coding agent runs in an Emacs buffer and edits
 ;;    the project. Speaks ACP, so the agent is swappable: Pi, Claude Code,
 ;;    Codex, Gemini, OpenCode... The agent's own config picks the model and
-;;    skills, e.g. Pi + Superpowers + DeepSeek:
+;;    skills. Pi = tiny core you extend; OpenCode = batteries included
+;;    (plan mode, LSP, MCP). Pi + Superpowers + DeepSeek:
 ;;      curl -fsSL https://pi.dev/install.sh | sh     ; pi
 ;;      npm i -g pi-acp                               ; Pi <-> Emacs bridge
 ;;      pi install git:github.com/obra/superpowers    ; skills
 ;;      pi, then /login (or ~/.pi/agent/models.json) ; DeepSeek / any model
+;;    OpenCode + Superpowers (see the Superpowers README for OpenCode):
+;;      brew install opencode, then /connect          ; DeepSeek is built in
 ;;
 ;; 2. Chat and rewrite (gptel): ask about the region, rewrite it, chat in a
 ;;    buffer. Talks to model APIs directly; switch backend/model in C-c a m.
@@ -26,6 +29,7 @@
   :bind (:map my-ai-map
          ("a" . agent-shell)                            ; pick an agent
          ("p" . agent-shell-pi-start-agent)             ; Pi (needs pi-acp)
+         ("o" . agent-shell-opencode-start-agent)       ; OpenCode (opencode acp)
          ("c" . agent-shell-anthropic-start-claude-code))) ; Claude Code (uses the `claude' login)
 
 ;; Chat / rewrite against model APIs

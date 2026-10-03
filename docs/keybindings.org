@@ -164,6 +164,7 @@ region or buffer. Setup steps are at the top of modules/my-ai.el.
 |-----------+-----------------------------------------+------------------------------------------------------|
 | =C-c a a= | agent-shell                             | Start an agent, pick which one                       |
 | =C-c a p= | agent-shell-pi-start-agent              | Pi (its own model, skills: DeepSeek, Superpowers...) |
+| =C-c a o= | agent-shell-opencode-start-agent        | OpenCode (plan mode, LSP, MCP built in)              |
 | =C-c a c= | agent-shell-anthropic-start-claude-code | Claude Code                                          |
 | =C-c a g= | gptel                                   | Chat buffer                                          |
 | =C-c a s= | gptel-send                              | Send region, or buffer up to point                   |
