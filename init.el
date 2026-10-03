@@ -38,4 +38,5 @@
 (require 'my-yaml)
 (require 'my-markdown)
 (require 'my-org)
+(require 'my-ai)
 

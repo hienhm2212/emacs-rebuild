@@ -17,6 +17,7 @@ Your own commands live under =C-c= plus one letter per group.
 | =C-c o= | open: project tab, terminal, REPL, SQL | my-workspace.el, my-ruby.el, my-backend.el |
 | =C-c n= | notes: Org agenda, capture, denote     | my-org.el                                  |
 | =C-c d= | debug (dape)                           | my-backend.el                              |
+| =C-c a= | ai: Claude Code agent                  | my-ai.el                                   |
 
 On the MacBook (my-env.el):
 - *Option* = Meta, so =M-x= is Option-x.
@@ -153,6 +154,23 @@ Daily loop: =C-c n c= capture, =C-c n d= see the day, =C-c n g= sync =~/org=.
 - *In an Org file:* =C-c C-t= changes TODO state, =C-c C-w= refiles,
   =C-c C-c= ticks a checkbox or runs a code block, =<s TAB= inserts a
   source block.
+
+* AI agent (Claude Code)
+=C-c a s= starts Claude Code in an eat terminal at the project root; it
+can read your buffers, diagnostics and symbols through Emacs.
+
+| Key       | Command                     | What it does                   |
+|-----------+-----------------------------+--------------------------------|
+| =C-c a a= | claude-code-ide-menu        | Menu with every action         |
+| =C-c a s= | claude-code-ide             | Start Claude in this project   |
+| =C-c a p= | claude-code-ide-send-prompt | Ask from the minibuffer        |
+| =C-c a c= | claude-code-ide-continue    | Continue the last conversation |
+| =C-c a r= | claude-code-ide-resume      | Pick an older conversation     |
+| =C-c a q= | claude-code-ide-stop        | Stop Claude for this project   |
+
+When Claude edits a file it opens an ediff: =n= / =p= move between
+changes (you can also edit buffer B), =q= quits, then =y= accepts or =n=
+rejects.
 
 * Files, YAML and Markdown
 Dired works like oil.nvim: open the folder, edit names as text, apply.
