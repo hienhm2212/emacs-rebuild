@@ -1,5 +1,10 @@
 ;;; init.el --- Initialization -*- lexical-binding: t -*-
 
+;; Built-in which-key, go-ts-mode test commands, flymake end-of-line
+;; diagnostics... all need Emacs 30. Fail early with a clear message.
+(when (< emacs-major-version 30)
+  (error "This config needs Emacs 30+, running %s" emacs-version))
+
 ;; Require package
 (require 'package)
 ;; Add package

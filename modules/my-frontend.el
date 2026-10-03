@@ -114,7 +114,7 @@
              '("\\([^/]+\\)\\.\\([jt]sx?\\)\\'" "\\1.test.\\2" "\\1.spec.\\2"))
 
 ;; Snippets: type the key then TAB (rfc, us, ue, uc, um, cl...).
-;; Own snippets live in ~/emacs/snippets/<mode>/, one file per snippet.
+;; Own snippets live in ~/.emacs.d/snippets/<mode>/ (user-emacs-directory), one file per snippet.
 (use-package yasnippet
   :ensure t
   :hook (prog-mode . yas-minor-mode)   ; eglot also uses it for function arguments
