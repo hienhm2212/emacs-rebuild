@@ -8,6 +8,10 @@
 (use-package exec-path-from-shell
   :ensure t
   :if (or (memq window-system '(mac ns x pgtk)) (daemonp))
+  :custom
+  ;; Login shell only (no -i): skips .zshrc, much faster. Keep PATH in ~/.zprofile.
+  (exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-variables '("PATH" "MANPATH" "GOPATH" "LANG"))
   :config (exec-path-from-shell-initialize))
 
 ;; mise shims (same path on Linux and macOS)
