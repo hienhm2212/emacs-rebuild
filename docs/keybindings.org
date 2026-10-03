@@ -1,0 +1,174 @@
+#+TITLE: Emacs Keybindings Cheat Sheet
+#+DATE: 2026-10-03
+#+STARTUP: overview
+
+Keys added by this config, grouped by leader prefix. Press a prefix and
+wait: which-key lists what comes next. =C-h B= searches every active key.
+
+* How the keys are organized
+Your own commands live under =C-c= plus one letter per group.
+
+| Prefix  | Group                                  | Defined in                                 |
+|---------+----------------------------------------+--------------------------------------------|
+| =C-c f= | find: files, text, symbols             | my-completion.el                           |
+| =C-c c= | code: LSP actions, diagnostics         | my-coding.el, my-go.el                     |
+| =C-c t= | test (per language: Ruby, Go, JS/TS)   | my-ruby.el, my-go.el, my-frontend.el       |
+| =C-c g= | git                                    | my-git.el                                  |
+| =C-c o= | open: project tab, terminal, REPL, SQL | my-workspace.el, my-ruby.el, my-backend.el |
+| =C-c n= | notes: Org agenda, capture, denote     | my-org.el                                  |
+| =C-c d= | debug (dape)                           | my-backend.el                              |
+
+On the MacBook (my-env.el):
+- *Option* = Meta, so =M-x= is Option-x.
+- *Command* = Super, so Cmd-c, Cmd-v and Cmd-z still copy, paste and undo.
+- *Right Option* types special characters as usual.
+
+repeat-mode lets you repeat the last key of a sequence, as in =C-x o o o=.
+
+* Find and completion
+=C-c f g= (ripgrep, needs =rg=) is the one you will use most.
+
+| Key       | Command                | What it does                               |
+|-----------+------------------------+--------------------------------------------|
+| =C-c f f= | project-find-file      | File in this project                       |
+| =C-c f r= | consult-recent-file    | Recently opened file                       |
+| =C-c f g= | consult-ripgrep        | Search text in the project, live preview   |
+| =C-c f l= | consult-line           | Search lines in this buffer                |
+| =C-c f i= | consult-imenu          | Jump to a function or class                |
+| =C-c f o= | consult-outline        | Jump to a heading                          |
+| =C-c f b= | consult-buffer         | Switch buffer                              |
+| =C-c f p= | consult-project-buffer | Switch buffer in this project              |
+| =C-x b=   | consult-buffer         | Switch buffer (replaces the default)       |
+| =M-y=     | consult-yank-pop       | Pick from the kill ring                    |
+| =M-g g=   | consult-goto-line      | Go to line, with preview                   |
+| =M-g i=   | consult-imenu          | Jump to a symbol                           |
+| =C-.=     | embark-act             | Actions on the candidate or thing at point |
+| =C-. E=   | embark-export          | Export results to a buffer                 |
+
+- In the minibuffer, type space-separated words in any order (orderless):
+  =user con= finds =users_controller.rb=.
+- *Edit search results across files:* =C-c f g=, then =C-. E= to export,
+  =C-c C-p= to edit (wgrep), =C-c C-c= to apply.
+- *Completion while typing (corfu):* popup after 2 characters. =TAB=
+  indents first, then completes. =C-n= / =C-p= to move, =RET= to accept.
+
+* Code, LSP and diagnostics
+Go and Ruby format and organize imports on save; JS/TS/JSON/CSS run
+Prettier after save.
+
+| Key                   | Command                   | What it does                           |
+|-----------------------+---------------------------+----------------------------------------|
+| =C-c c r=             | eglot-rename              | Rename the symbol everywhere           |
+| =C-c c a=             | eglot-code-actions        | Quick fixes, refactors                 |
+| =C-c c f=             | eglot-format-buffer       | Format now                             |
+| =C-c c d=             | consult-flymake           | List diagnostics, jump to one          |
+| =C-c c n= / =C-c c p= | flymake next / prev error | Step through errors                    |
+| =C-c c h=             | eglot-inlay-hints-mode    | Toggle type and parameter hints        |
+| =C-c c y=             | my/yaml-copy-path         | Copy the YAML key path (YAML only)     |
+| =M-n= / =M-p=         | flymake next / prev error | Same, without the prefix               |
+| =M-.=                 | xref-find-definitions     | Go to definition (picker with preview) |
+| =M-?=                 | xref-find-references      | Find references                        |
+| =M-,=                 | xref-go-back              | Jump back                              |
+
+In HTML and JSX buffers, Emmet expands =div.card>ul>li*3= with =C-j=.
+Yasnippet expands a snippet key with =TAB= (=rfc=, =us=, =ue=, =uc=, =um=, =clg=).
+
+* Tests
+=C-c t= uses the same letters in Ruby, Go and JS/TS.
+
+| Key       | Ruby (rspec-mode)      | Go (go-ts-mode)        | JS / TS (jest or vitest)      |
+|-----------+------------------------+------------------------+-------------------------------|
+| =C-c t t= | Spec at point          | Test function at point | it / test / describe at point |
+| =C-c t f= | This spec file         | This file              | This file                     |
+| =C-c t a= | Whole suite            | =go test ./...=        | Whole suite                   |
+| =C-c t r= | Rerun last             | Rerun last             | Rerun last                    |
+| =C-c t s= | user.rb ↔ user_spec.rb | foo.go ↔ foo_test.go   | Button.tsx ↔ Button.test.tsx  |
+| =C-c t p= | —                      | This package           | —                             |
+| =C-c t l= | Only last failures     | —                      | —                             |
+
+In the test output buffer, =M-g n= / =M-g p= (or =RET= on a line) jump to
+the failing line. A Ruby spec that stops at =binding.irb= or =debugger=
+lets you type into the prompt right there.
+
+* Git
+Magit status; the fringe marks changed lines live (diff-hl).
+
+| Key                   | Command                      | What it does                   |
+|-----------------------+------------------------------+--------------------------------|
+| =C-x g= / =C-c g g=   | magit-status                 | Status: stage, commit, push    |
+| =C-c g b=             | magit-blame-addition         | Blame this file                |
+| =C-c g l=             | magit-log-buffer-file        | History of this file           |
+| =C-c g f=             | magit-file-dispatch          | All Magit actions on this file |
+| =C-c g n= / =C-c g p= | diff-hl next / previous hunk | Jump between changes           |
+| =C-c g s=             | diff-hl-show-hunk            | Show the diff of this hunk     |
+| =C-c g r=             | diff-hl-revert-hunk          | Undo this hunk                 |
+
+Inside Magit status: =s= stage, =u= unstage, =c c= commit, =P p= push,
+=F p= pull, =?= lists every key.
+
+* Open, workspace and backend
+=C-c o p= gives each project its own tab, like a tmux session.
+
+| Key                          | Command               | What it does                                 |
+|------------------------------+-----------------------+----------------------------------------------|
+| =C-c o p=                    | my/project-tab        | Open a project in its own tab (or switch)    |
+| =C-c o t=                    | eat-project           | Terminal at the project root, reused if open |
+| =C-c o T=                    | eat                   | Terminal in the current folder               |
+| =C-c o r=                    | inf-ruby-console-auto | rails console / bundle console / irb         |
+| =C-c o a=                    | my/project-api-file   | Open the project's api.org (HTTP requests)   |
+| =C-c o s=                    | sql-connect           | Connect to a database                        |
+| =C-c <left>= / =C-c <right>= | tab-bar-history       | Undo / redo window layout in this tab        |
+| =C-c d=                      | dape-global-map       | Debugger: breakpoints, step, continue        |
+
+- *Inside the terminal (eat):* =C-c C-e= switches to Emacs keys (copy,
+  scroll); =C-c C-j= goes back to terminal keys.
+- *Ruby buffer + REPL:* =C-c C-r= sends the region, =C-c C-e= the method,
+  =C-c C-z= switches to the console.
+- *HTTP requests (verb), in api.org:* =C-c C-r C-r= sends the request
+  under the cursor.
+- *Debugger:* =C-c d=, then which-key shows the keys. With repeat-mode,
+  =C-c d n n n= steps three times.
+
+* Notes and Org
+Daily loop: =C-c n c= capture, =C-c n d= see the day, =C-c n g= sync =~/org=.
+
+| Key                 | Command               | What it does                                  |
+|---------------------+-----------------------+-----------------------------------------------|
+| =C-c n c=           | org-capture           | Capture (templates below)                     |
+| =C-c n d=           | my/org-dashboard      | Agenda dashboard: today, Next, Waiting, Inbox |
+| =C-c n a=           | org-agenda            | Agenda menu                                   |
+| =C-c n o=           | my/org-inbox          | Open inbox.org to refile                      |
+| =C-c n j=           | my/org-journal-today  | Today's journal entry                         |
+| =C-c n s=           | my/org-search         | ripgrep all Org files                         |
+| =C-c n g=           | my/org-sync           | Commit, pull --rebase, push ~/org             |
+| =C-c n n=           | denote                | New knowledge note                            |
+| =C-c n f=           | denote-open-or-create | Find a note, or create it                     |
+| =C-c n i=           | denote-link           | Link to another note                          |
+| =C-c n r=           | denote-rename-file    | Change a note's title or keywords             |
+| =C-c n b=           | my/denote-bug         | New bug investigation note                    |
+| =C-c n l= / =C-c l= | org-store-link        | Remember this line, paste with =C-c C-l=      |
+
+- *Capture templates (=C-c n c=, then):* =t= task, =j= journal, =m=
+  meeting, =l= link to read later, =n= note, =b= bug investigation.
+- *In an Org file:* =C-c C-t= changes TODO state, =C-c C-w= refiles,
+  =C-c C-c= ticks a checkbox or runs a code block, =<s TAB= inserts a
+  source block.
+
+* Files, YAML and Markdown
+Dired works like oil.nvim: open the folder, edit names as text, apply.
+
+| Where      | Key                            | What it does                                     |
+|------------+--------------------------------+--------------------------------------------------|
+| Anywhere   | =C-x C-j=                      | Open the folder of the current file in Dired     |
+| Dired      | =(=                            | Show / hide details (size, date, permissions)    |
+| Dired      | =C-x C-q=                      | Edit file names as text (wdired)                 |
+| wdired     | =C-c C-c= / =C-c C-k=          | Apply / cancel the renames                       |
+| Dired      | =C= / =R=                      | Copy / move, to the Dired in the other window    |
+| Dired      | =D=                            | Delete, to the macOS Trash                       |
+| Remote     | =C-x C-f /ssh:user@host:/path= | Open a file over SSH (TRAMP)                     |
+| YAML       | =C-c c y=                      | Copy the key path, e.g. spec.containers[0].image |
+| Markdown   | =C-c '=                        | Edit the code block in its own mode              |
+| Markdown   | =C-c f o= / =C-c f i=          | Jump to a heading                                |
+| Any buffer | =C-x o o o=                    | Cycle windows (repeat-mode)                      |
+
+YAML buffers also show the key path at point in the header line, live.
