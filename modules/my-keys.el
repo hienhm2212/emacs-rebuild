@@ -11,7 +11,7 @@
 (defvar-keymap my-git-map :doc "Git: status, blame, hunks.")
 (defvar-keymap my-open-map :doc "Open: project tab, terminal.")
 (defvar-keymap my-notes-map :doc "Notes: agenda, capture, denote.")
-(defvar-keymap my-ai-map :doc "AI: Claude Code agent.")
+(defvar-keymap my-ai-map :doc "AI: coding agents, chat, rewrite.")
 
 (keymap-set mode-specific-map "f" my-find-map) ; C-c f
 (keymap-set mode-specific-map "c" my-code-map) ; C-c c
