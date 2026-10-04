@@ -134,24 +134,33 @@ Inside Magit status: =s= stage, =u= unstage, =c c= commit, =P p= push,
 * Notes and Org
 Daily loop: =C-c n c= capture, =C-c n d= see the day, =C-c n g= sync =~/org=.
 
-| Key                 | Command               | What it does                                  |
-|---------------------+-----------------------+-----------------------------------------------|
-| =C-c n c=           | org-capture           | Capture (templates below)                     |
-| =C-c n d=           | my/org-dashboard      | Agenda dashboard: today, Next, Waiting, Inbox |
-| =C-c n a=           | org-agenda            | Agenda menu                                   |
-| =C-c n o=           | my/org-inbox          | Open inbox.org to refile                      |
-| =C-c n j=           | my/org-journal-today  | Today's journal entry                         |
-| =C-c n s=           | my/org-search         | ripgrep all Org files                         |
-| =C-c n g=           | my/org-sync           | Commit, pull --rebase, push ~/org             |
-| =C-c n n=           | denote                | New knowledge note                            |
-| =C-c n f=           | denote-open-or-create | Find a note, or create it                     |
-| =C-c n i=           | denote-link           | Link to another note                          |
-| =C-c n r=           | denote-rename-file    | Change a note's title or keywords             |
-| =C-c n b=           | my/denote-bug         | New bug investigation note                    |
-| =C-c n l= / =C-c l= | org-store-link        | Remember this line, paste with =C-c C-l=      |
+| Key                 | Command                   | What it does                                                       |
+|---------------------+---------------------------+--------------------------------------------------------------------|
+| =C-c n c=           | org-capture               | Capture (templates below)                                          |
+| =C-c n d=           | my/org-dashboard          | Agenda dashboard: today, Next, Waiting, Inbox                      |
+| =C-c n a=           | org-agenda                | Agenda menu                                                        |
+| =C-c n o=           | my/org-inbox              | Open inbox.org to refile                                           |
+| =C-c n j=           | my/org-journal-today      | Today's journal entry                                              |
+| =C-c n s=           | my/org-search             | ripgrep all Org files                                              |
+| =C-c n g=           | my/org-sync               | Commit, pull --rebase, push ~/org                                  |
+| =C-c n n=           | denote                    | New knowledge note                                                 |
+| =C-c n f=           | denote-open-or-create     | Find a note, or create it                                          |
+| =C-c n i=           | denote-link               | Link to another note                                               |
+| =C-c n r=           | denote-rename-file        | Change a note's title or keywords                                  |
+| =C-c n b=           | my/denote-bug             | New bug investigation note                                         |
+| =C-c n l= / =C-c l= | org-store-link            | Remember this line, paste with =C-c C-l=                           |
+| =C-c n p=           | my/org-projects           | Open a project, active first (=C-u= adds archived)                 |
+| =C-c n P=           | my/org-project-new        | New project: personal (~/org) or work (~/work-org)                 |
+| =C-c n S=           | my/org-project-set-status | Set status: active, hold, done, dropped (done/dropped can archive) |
 
 - *Capture templates (=C-c n c=, then):* =t= task, =j= journal, =m=
-  meeting, =l= link to read later, =n= note, =b= bug investigation.
+  meeting, =l= link to read later, =n= note, =b= bug investigation,
+  =p= task into a project, =L= log entry into a project.
+- *Projects (Inkdrop-style notebooks):* one file per project in
+  =~/org/projects/= (personal, synced) or =~/work-org/projects/= (work,
+  never in the personal repo), each with =* Context=, =* Tasks=,
+  =* Decisions=, =* Log= and a =#+STATUS:= line. Live projects are in the
+  agenda and refile targets; archived ones (=projects/archive/=) are not.
 - *In an Org file:* =C-c C-t= changes TODO state, =C-c C-w= refiles,
   =C-c C-c= ticks a checkbox or runs a code block, =<s TAB= inserts a
   source block.
@@ -187,6 +196,7 @@ Emacs starts on a dashboard: recent files, projects, this week's agenda
 | =t=                   | Project in its own tab                          |
 | =c=                   | Org capture                                     |
 | =d=                   | Org dashboard                                   |
+| =o=                   | Org projects                                    |
 | =i=                   | Start an AI agent                               |
 | =g=                   | Refresh                                         |
 | =C-c o h=             | Back to the dashboard from anywhere             |

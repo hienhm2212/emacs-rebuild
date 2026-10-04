@@ -3,7 +3,8 @@
 ;; Start screen: recent files, projects, this week's agenda, bookmarks,
 ;; plus one-key shortcuts to the daily workflows.
 ;; In the dashboard: r/p/a/m jump to a section, j/k move, RET opens,
-;; t project tab, c capture, d Org dashboard, i AI agent, g refresh.
+;; t project tab, c capture, d Org dashboard, o Org projects, i AI agent,
+;; g refresh.
 ;; Anywhere: C-c o h ("home") brings it back.
 ;; Icons use nerd-icons: a Nerd Font must be installed
 ;; (brew install --cask font-symbols-only-nerd-font).
@@ -20,6 +21,7 @@
          ("t" . my/project-tab)
          ("c" . org-capture)
          ("d" . my/org-dashboard)
+         ("o" . my/org-projects)
          ("i" . agent-shell))
   :custom
   (dashboard-startup-banner 'logo)
@@ -44,6 +46,8 @@
            (lambda (&rest _) (org-capture)))
       (nil "Org dashboard" "Agenda, Next, Waiting, Inbox (d)"
            (lambda (&rest _) (my/org-dashboard)))
+      (nil "Org projects" "Project notebooks, active first (o)"
+           (lambda (&rest _) (my/org-projects)))
       (nil "AI agent" "Start an agent: Pi, OpenCode, Claude Code... (i)"
            (lambda (&rest _) (agent-shell))))))
   (dashboard-startupify-list '(dashboard-insert-banner
@@ -64,6 +68,7 @@
      "C-c g g  Magit status"
      "C-c a p  start Pi;  C-c a r  rewrite region with AI"
      "C-c n c  capture;  C-c n d  Org dashboard"
+     "C-c n p  open a project;  C-c n S  set its status"
      "C-c o t  terminal at the project root"
      "C-h B  search every key binding"))
   :config

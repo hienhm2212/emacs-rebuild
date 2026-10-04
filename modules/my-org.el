@@ -8,7 +8,9 @@
 ;;   inbox.org    quick captures land here first
 ;;   tasks.org    * Personal / * Learning / * Projects
 ;;   journal.org  devlog, Year > Month > Day
+;;   projects/    one file per project with a status (my-org-projects.el)
 ;;   notes/       one file per note (denote)
+;; Work lives in ~/work-org/ (inbox.org, projects/), outside this repo.
 ;;; Code:
 
 (defvar my/org-dir (expand-file-name "~/org/")
@@ -28,9 +30,7 @@
          ("l" . org-store-link))
   :custom
   (org-directory my/org-dir)
-  (org-agenda-files (list (my/org-file "inbox.org")
-                          (my/org-file "tasks.org")
-                          (my/org-file "journal.org")))
+  ;; org-agenda-files: set by my-org-projects.el (inbox, tasks, journal + projects)
 
   ;; Task states. NEXT = doing it soon, WAIT = blocked by someone/something.
   (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@)" "|" "DONE(d)" "CANCELLED(c@)")))
