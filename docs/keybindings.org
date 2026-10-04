@@ -112,6 +112,7 @@ Inside Magit status: =s= stage, =u= unstage, =c c= commit, =P p= push,
 
 | Key                          | Command               | What it does                                 |
 |------------------------------+-----------------------+----------------------------------------------|
+| =C-c o h=                    | dashboard-open        | Back to the start dashboard (home)           |
 | =C-c o p=                    | my/project-tab        | Open a project in its own tab (or switch)    |
 | =C-c o t=                    | eat-project           | Terminal at the project root, reused if open |
 | =C-c o T=                    | eat                   | Terminal in the current folder               |
@@ -174,6 +175,21 @@ region or buffer. Setup steps are at the top of modules/my-ai.el.
 - *In an agent buffer:* =RET= sends, =C-c C-c= interrupts.
 - *Change the gptel model:* =C-c a m=, then =-m=. DeepSeek is the default;
   Claude is also registered.
+
+* Dashboard
+Emacs starts on a dashboard: recent files, projects, this week's agenda
+(when =~/org= exists), bookmarks, and a random tip from this config.
+
+| Key                   | What it does                                    |
+|-----------------------+-------------------------------------------------|
+| =r= / =p= / =a= / =m= | Jump to recents / projects / agenda / bookmarks |
+| =j= / =k=, =RET=      | Move, open                                      |
+| =t=                   | Project in its own tab                          |
+| =c=                   | Org capture                                     |
+| =d=                   | Org dashboard                                   |
+| =i=                   | Start an AI agent                               |
+| =g=                   | Refresh                                         |
+| =C-c o h=             | Back to the dashboard from anywhere             |
 
 * Files, YAML and Markdown
 Dired works like oil.nvim: open the folder, edit names as text, apply.
