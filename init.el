@@ -39,4 +39,5 @@
 (require 'my-markdown)
 (require 'my-org)
 (require 'my-ai)
+(require 'my-dashboard) ; last: shows org, projects, AI from the modules above
 

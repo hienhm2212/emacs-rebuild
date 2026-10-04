@@ -9,7 +9,7 @@
 (defvar-keymap my-find-map :doc "Find: files, text, symbols.")
 (defvar-keymap my-code-map :doc "Code: LSP actions, diagnostics.")
 (defvar-keymap my-git-map :doc "Git: status, blame, hunks.")
-(defvar-keymap my-open-map :doc "Open: project tab, terminal.")
+(defvar-keymap my-open-map :doc "Open: dashboard, project tab, terminal.")
 (defvar-keymap my-notes-map :doc "Notes: agenda, capture, denote.")
 (defvar-keymap my-ai-map :doc "AI: coding agents, chat, rewrite.")
 
