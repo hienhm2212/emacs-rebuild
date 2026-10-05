@@ -2,6 +2,8 @@
 #+DATE: 2026-10-03
 #+STARTUP: overview
 
+Learning the Org workflow step by step: [[file:org-workflow.org][org-workflow.org]].
+
 Keys added by this config, grouped by leader prefix. Press a prefix and
 wait: which-key lists what comes next. =C-h B= searches every active key.
 
@@ -186,13 +188,14 @@ Daily loop: =C-c n c= capture, =C-c n d= see the day, =C-c n g= sync =~/org=.
 | =C-c n r=           | denote-rename-file        | Change a note's title or keywords                                  |
 | =C-c n b=           | my/denote-bug             | New bug investigation note                                         |
 | =C-c n l= / =C-c l= | org-store-link            | Remember this line, paste with =C-c C-l=                           |
+| =C-c n w=           | my/org-weekly-review      | Weekly review checklist in journal.org                             |
 | =C-c n p=           | my/org-projects           | Open a project, active first (=C-u= adds archived)                 |
 | =C-c n P=           | my/org-project-new        | New project: personal (~/org) or work (~/work-org)                 |
 | =C-c n S=           | my/org-project-set-status | Set status: active, hold, done, dropped (done/dropped can archive) |
 
 - *Capture templates (=C-c n c=, then):* =t= task, =j= journal, =m=
   meeting, =l= link to read later, =n= note, =b= bug investigation,
-  =p= task into a project, =L= log entry into a project.
+  =p= task into a project, =L= log entry into a project, =w= weekly review.
 - *Projects (Inkdrop-style notebooks):* one file per project in
   =~/org/projects/= (personal, synced) or =~/work-org/projects/= (work,
   never in the personal repo), each with =* Context=, =* Tasks=,
