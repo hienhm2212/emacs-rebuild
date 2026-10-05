@@ -26,6 +26,43 @@ On the MacBook (my-env.el):
 
 repeat-mode lets you repeat the last key of a sequence, as in =C-x o o o=.
 
+* Meow (modal editing)
+Single keys instead of chords. NORMAL: keys are commands. INSERT: typing,
+=ESC= goes back. MOTION (Magit, Dired, dashboard, agenda): their own keys
+plus =j= / =k= and =SPC=. Terminal, AI agents and REPLs start in INSERT.
+
+| Key in NORMAL   | What it does                                 |
+|-----------------+----------------------------------------------|
+| =h= =j= =k= =l= | Left, down, up, right                        |
+| =e= / =b=       | Next / previous word (=E= / =B=: symbol)     |
+| =w= / =x=       | Select word / line (repeat to grow)          |
+| =i= / =a=       | Insert before / after                        |
+| =I= / =A=       | Open line above / below                      |
+| =c= / =d= / =s= | Change / delete char / kill selection        |
+| =y= / =p=       | Copy / paste                                 |
+| =u=             | Undo                                         |
+| =f= / =t=       | Find / till a character                      |
+| =v= / =n=       | Search (visit) / next match                  |
+| =,= / =.=       | Select inside / around a thing (=,= =(= ...) |
+| =g=             | Cancel selection                             |
+| =Q= or =X=      | Go to line                                   |
+| =q=             | Quit window                                  |
+
+*SPC = keypad*, it types the chord for you:
+
+| Keypad        | Same as   | Note                                 |
+|---------------+-----------+--------------------------------------|
+| =SPC f g=     | =C-c f g= | Every =C-c= group: f t o n a d       |
+| =SPC e a=     | =C-c c a= | Code group (=SPC c= is a keypad key) |
+| =SPC v g=     | =C-c g g= | Git group (=SPC g= is a keypad key)  |
+| =SPC x f=     | =C-x C-f= | Control is tried first               |
+| =SPC x SPC b= | =C-x b=   | =SPC= inside = no Control            |
+| =SPC c c=     | =C-c C-c= | Org, capture, wdired...              |
+| =SPC m x=     | =M-x=     |                                      |
+| =SPC g f=     | =C-M-f=   | The hard =C-M-= keys                 |
+| =SPC h SPC f= | =C-h f=   | Help                                 |
+| =SPC ?=       |           | Meow cheat sheet                     |
+
 * Find and completion
 =C-c f g= (ripgrep, needs =rg=) is the one you will use most.
 
