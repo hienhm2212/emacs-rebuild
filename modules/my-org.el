@@ -8,7 +8,9 @@
 ;;   inbox.org    quick captures land here first
 ;;   tasks.org    * Personal / * Learning / * Projects
 ;;   journal.org  devlog, Year > Month > Day
+;;   projects/    one file per project with a status (my-org-projects.el)
 ;;   notes/       one file per note (denote)
+;; Work lives in ~/work-org/ (inbox.org, projects/), outside this repo.
 ;;; Code:
 
 (defvar my/org-dir (expand-file-name "~/org/")
@@ -28,9 +30,7 @@
          ("l" . org-store-link))
   :custom
   (org-directory my/org-dir)
-  (org-agenda-files (list (my/org-file "inbox.org")
-                          (my/org-file "tasks.org")
-                          (my/org-file "journal.org")))
+  ;; org-agenda-files: set by my-org-projects.el (inbox, tasks, journal + projects)
 
   ;; Task states. NEXT = doing it soon, WAIT = blocked by someone/something.
   (org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@)" "|" "DONE(d)" "CANCELLED(c@)")))
@@ -62,7 +62,20 @@
       :no-save t :immediate-finish nil :kill-buffer t :jump-to-captured t)
      ("b" "Bug investigation" plain (file denote-last-path)
       #'my/denote-capture-bug
-      :no-save t :immediate-finish nil :kill-buffer t :jump-to-captured t)))
+      :no-save t :immediate-finish nil :kill-buffer t :jump-to-captured t)
+     ;; Friday checklist, kept in the journal so past reviews stay findable
+     ("w" "Weekly review" entry (file+olp+datetree ,(my/org-file "journal.org"))
+      ,(concat "* Weekly review :review:\n"
+               "- [ ] Inbox empty: refile, schedule or delete (C-c n o)\n"
+               "- [ ] Each project: 1-2 NEXT, status still right (C-c n p, C-c n S)\n"
+               "- [ ] Done / dropped projects archived\n"
+               "- [ ] WAIT items: anyone to follow up?\n"
+               "- [ ] Next week: dates and deadlines set (C-c n d)\n"
+               "- [ ] Sync ~/org (C-c n g)\n"
+               "** Went well\n%?\n"
+               "** To improve\n"
+               "** Focus next week\n")
+      :jump-to-captured t)))
 
   ;; Agenda
   (org-agenda-span 'day)
@@ -160,6 +173,12 @@
 (keymap-set my-notes-map "j" #'my/org-journal-today)
 (keymap-set my-notes-map "d" #'my/org-dashboard)
 (keymap-set my-notes-map "g" #'my/org-sync)
+(defun my/org-weekly-review ()
+  "Start this week's review checklist in journal.org."
+  (interactive)
+  (org-capture nil "w"))
+
+(keymap-set my-notes-map "w" #'my/org-weekly-review)
 (defun my/org-inbox ()
   "Open inbox.org (to refile captured items)."
   (interactive)

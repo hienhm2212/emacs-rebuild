@@ -1,0 +1,146 @@
+#+TITLE: Luyện workflow Org-mode — 4 tuần
+#+DATE: 2026-10-05
+#+STARTUP: overview
+#+TODO: TODO DOING | DONE
+
+* Cách dùng file này
+- Mỗi tuần một bài, chỉ tập đúng phần đó. Phần khác cứ bỏ qua.
+- Bấm =TAB= trên tiêu đề để mở/đóng; =C-c C-t= (meow: =SPC c t=) đổi
+  =TODO= → =DOING= → =DONE=.
+- Tick checkbox bằng =C-c C-c= (meow: =SPC c c=).
+- Ghi lại điều bạn thấy vào *Ghi chú của mình* ở cuối mỗi bài.
+
+** Vòng lặp cần nhớ
+#+begin_example
+  Ghi nhanh   →   Xử lý inbox   →   Làm việc   →   Review tuần
+  C-c n c         cuối ngày          C-c n d        thứ Sáu
+#+end_example
+- Lúc ghi thì *không sắp xếp*. Cứ ném vào inbox.
+- Cuối ngày inbox phải về 0.
+- Mỗi project chỉ 1–2 việc =NEXT=.
+
+** Phím meow tương ứng
+Với meow, thay =C-c= bằng =SPC=: =C-c n c= → =SPC n c=, =C-c C-t= → =SPC c t=,
+=C-c C-w= → =SPC c w=. Cheat sheet đầy đủ: [[file:keybindings.org][keybindings.org]].
+
+* Tiến độ [0/5]
+- [ ] Bài 0 — Chuẩn bị thư mục
+- [ ] Tuần 1 — Ghi nhanh và dọn inbox
+- [ ] Tuần 2 — Agenda buổi sáng, NEXT và lịch
+- [ ] Tuần 3 — Project và review thứ Sáu
+- [ ] Tuần 4 — Ghi chú kiến thức với denote
+
+* TODO Bài 0 — Chuẩn bị thư mục                                      :dễ:
+- Mục tiêu :: Có đủ file để agenda và capture chạy.
+- Bài tập ::
+  - [ ] Tạo =~/org/= là một git repo riêng (=git init=, thêm remote private).
+  - [ ] Tạo =inbox.org=, =tasks.org=, =journal.org= trong =~/org/=
+        (file rỗng cũng được).
+  - [ ] Trong =tasks.org= tạo hai mục: =* Personal= và =* Learning=.
+  - [ ] Tạo =~/work-org/= (KHÔNG đưa vào repo =~/org=).
+  - [ ] Khởi động lại Emacs, mở dashboard (=C-c o h=): phần Agenda xuất hiện.
+- Kiểm tra :: =C-h v org-agenda-files= liệt kê đúng các file trên.
+
+** Ghi chú của mình
+
+* TODO Tuần 1 — Ghi nhanh và dọn inbox                               :dễ:
+- Mục tiêu :: Không giữ việc gì trong đầu. Mọi thứ vào inbox, tối dọn sạch.
+- Phím ::
+  | Việc             | Phím        | Meow        |
+  |------------------+-------------+-------------|
+  | Ghi task         | =C-c n c t= | =SPC n c t= |
+  | Lưu link đọc sau | =C-c n c l= | =SPC n c l= |
+  | Viết devlog      | =C-c n c j= | =SPC n c j= |
+  | Xong capture     | =C-c C-c=   | =SPC c c=   |
+  | Huỷ capture      | =C-c C-k=   | =SPC c k=   |
+  | Mở inbox         | =C-c n o=   | =SPC n o=   |
+  | Refile           | =C-c C-w=   | =SPC c w=   |
+  | Lên lịch         | =C-c C-s=   | =SPC c s=   |
+- Bài tập ::
+  - [ ] Mỗi ngày capture ít nhất 5 việc, kể cả việc nhỏ.
+  - [ ] Đang ở một dòng code thì capture task: xem link =%a= gắn về dòng đó,
+        bấm vào link (=C-c C-o=) để nhảy lại.
+  - [ ] Cuối ngày mở inbox, mỗi mục chọn 1 trong 4: refile, lên lịch,
+        đặt deadline (=C-c C-d=), hoặc xoá.
+  - [ ] 5 tối liên tiếp inbox về 0.
+- Kiểm tra :: Sáng mở =C-c n d=: mục "Inbox (refile me)" trống.
+- Lỗi hay gặp :: Ngồi sắp xếp ngay lúc capture. Đừng. Capture xong là quay
+  lại việc đang làm.
+
+** Ghi chú của mình
+
+* TODO Tuần 2 — Agenda buổi sáng, NEXT và lịch                      :vừa:
+- Mục tiêu :: Mỗi sáng biết rõ hôm nay làm gì trong 2 phút.
+- Phím ::
+  | Việc                         | Phím                     |
+  |------------------------------+--------------------------|
+  | Dashboard Org                | =C-c n d= (=SPC n d=)    |
+  | Đổi trạng thái (trong file)  | =C-c C-t= rồi =n= (NEXT) |
+  | Đổi trạng thái (agenda)      | =t=                      |
+  | Mở mục từ agenda             | =RET=                    |
+  | Về hôm nay / ngày sau, trước | =.= / =f= / =b=          |
+  | Chờ người khác               | =C-c C-t= rồi =w= (WAIT) |
+- Bài tập ::
+  - [ ] Mỗi sáng mở =C-c n d=, chọn tối đa 3 việc và chuyển sang =NEXT=.
+  - [ ] Chỉ lên lịch (=C-c C-s=) cho việc *thật sự* có ngày; việc khác để
+        =TODO=/=NEXT=, không lên lịch giả.
+  - [ ] Có một việc phải chờ ai đó: đặt =WAIT=, ghi lý do khi được hỏi.
+  - [ ] Hoàn thành một việc: =t= → =d= trong agenda. Xem dòng =CLOSED:=
+        được thêm vào.
+- Kiểm tra :: Agenda sáng nay không quá 3 việc =NEXT=, không có việc quá hạn
+  bị bỏ quên.
+- Lỗi hay gặp :: Lên lịch mọi thứ → agenda đầy việc quá hạn → bỏ không xem
+  nữa. Lịch chỉ cho việc có ngày thật.
+
+** Ghi chú của mình
+
+* TODO Tuần 3 — Project và review thứ Sáu                           :vừa:
+- Mục tiêu :: Mỗi project (3–4 cái) luôn có việc tiếp theo rõ ràng.
+- Phím ::
+  | Việc                   | Phím                  |
+  |------------------------+-----------------------|
+  | Tạo project            | =C-c n P= (=SPC n P=) |
+  | Mở project             | =C-c n p= (=SPC n p=) |
+  | Đổi trạng thái project | =C-c n S= (=SPC n S=) |
+  | Ghi task vào project   | =C-c n c p=           |
+  | Ghi log vào project    | =C-c n c L=           |
+  | Bắt đầu review tuần    | =C-c n w= (=SPC n w=) |
+  | Đồng bộ =~/org=        | =C-c n g= (=SPC n g=) |
+- Bài tập ::
+  - [ ] Tạo đủ project đang làm (công việc thì trả lời =y= để vào =~/work-org=).
+  - [ ] Điền =* Context= mỗi project: repo, link, người liên quan, cách chạy.
+  - [ ] Ghi một quyết định vào =* Decisions=: làm gì và *tại sao*.
+  - [ ] Họp hoặc điều tra xong: =C-c n c L= ghi vào =* Log= của project.
+  - [ ] Thứ Sáu: =C-c n w=, đi hết checklist, viết 3 dòng "Went well /
+        To improve / Focus next week".
+  - [ ] Một project xong hoặc dừng hẳn: =C-c n S= → =done= → archive.
+- Kiểm tra :: =C-c n p= — mọi project =active= đều có ít nhất 1 =NEXT=.
+- Lỗi hay gặp :: Quá nhiều project =active=. Cái nào không làm tuần này
+  → =hold=.
+
+** Ghi chú của mình
+
+* TODO Tuần 4 — Ghi chú kiến thức với denote                       :khó:
+- Mục tiêu :: Thứ học được (Go, Rust, React, bug đã gặp) không mất đi khi
+  project kết thúc.
+- Phân biệt ::
+  - =projects/= — mọi thứ hết giá trị khi project xong.
+  - =notes/= (denote) — kiến thức giữ mãi: "Go context huỷ thế nào", TIL.
+- Phím ::
+  | Việc                   | Phím                  |
+  |------------------------+-----------------------|
+  | Ghi chú mới            | =C-c n n= (=SPC n n=) |
+  | Tìm / tạo ghi chú      | =C-c n f=             |
+  | Chèn link tới ghi chú  | =C-c n i=             |
+  | Đổi tiêu đề, từ khoá   | =C-c n r=             |
+  | Ghi chú điều tra bug   | =C-c n b=             |
+  | Tìm chữ trong mọi file | =C-c n s=             |
+- Bài tập ::
+  - [ ] Viết 3 ghi chú về thứ bạn đang học, dùng từ khoá có sẵn
+        (=go=, =rust=, =react=, =til=...).
+  - [ ] Từ một ghi chú, link sang ghi chú khác (=C-c n i=).
+  - [ ] Gặp một bug thật: =C-c n b=, điền Symptom → Root cause → Fix.
+  - [ ] Một tháng sau, tìm lại ghi chú đó bằng =C-c n s=.
+- Kiểm tra :: Mở =~/org/notes/= trong Dired: tên file có ngày, tiêu đề, từ khoá.
+
+** Ghi chú của mình
