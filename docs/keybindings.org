@@ -65,6 +65,12 @@ plus =j= / =k= and =SPC=. Terminal, AI agents and REPLs start in INSERT.
 | =SPC h SPC f= | =C-h f=   | Help                                 |
 | =SPC ?=       |           | Meow cheat sheet                     |
 
+* Line numbers
+Shown in code and config buffers (=prog-mode=, =conf-mode=, YAML), not in
+Org, Markdown, terminals or special buffers. =M-x display-line-numbers-mode=
+toggles them in the current buffer. For relative numbers, set
+=display-line-numbers-type= to ='relative= in =modules/my-ui.el=.
+
 * Find and completion
 =C-c f g= (ripgrep, needs =rg=) is the one you will use most.
 
@@ -109,6 +115,10 @@ Prettier after save.
 | =M-.=                 | xref-find-definitions     | Go to definition (picker with preview) |
 | =M-?=                 | xref-find-references      | Find references                        |
 | =M-,=                 | xref-go-back              | Jump back                              |
+| =C-c c .= (=SPC e .=) | xref-find-definitions     | Go to definition, meow-friendly        |
+| =C-c c ,= (=SPC e ,=) | xref-go-back              | Jump back                              |
+| =C-c c ?= (=SPC e ?=) | xref-find-references      | Find references                        |
+| =C-c c s= (=SPC e s=) | xref-find-apropos         | Find a symbol by name in the project   |
 
 In HTML and JSX buffers, Emmet expands =div.card>ul>li*3= with =C-j=.
 Yasnippet expands a snippet key with =TAB= (=rfc=, =us=, =ue=, =uc=, =um=, =clg=).

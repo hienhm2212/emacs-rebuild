@@ -31,6 +31,16 @@
 ;; GUI frames created later (emacs --daemon + emacsclient -c)
 (add-hook 'after-make-frame-functions #'my/set-font)
 
+;; Line numbers where you write code and config, not in prose (Org,
+;; Markdown), terminals or special buffers (Magit, Dired, dashboard).
+;; yaml-ts-mode comes from text-mode, so it is listed on its own.
+(setq-default display-line-numbers-width 3        ; room for 999 lines, no jumping
+              display-line-numbers-grow-only t)   ; don't shrink when scrolling up
+(dolist (hook '(prog-mode-hook conf-mode-hook yaml-ts-mode-hook))
+  (add-hook hook #'display-line-numbers-mode))
+;; Relative numbers (5 lines up = "5") instead: set this to 'relative
+(setq-default display-line-numbers-type t)
+
 ;; Mode line: line:column, hide the long list of minor modes behind ";-)"
 (column-number-mode 1)
 (use-package minions
