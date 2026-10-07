@@ -295,8 +295,15 @@ Dired works like oil.nvim: open the folder, edit names as text, apply.
 | Dired      | =(=                            | Show / hide details (size, date, permissions)    |
 | Dired      | =C-x C-q=                      | Edit file names as text (wdired)                 |
 | wdired     | =C-c C-c= / =C-c C-k=          | Apply / cancel the renames                       |
+| wdired     | rename to =lib/a.rb=           | Moves the file and creates =lib/=                |
 | Dired      | =C= / =R=                      | Copy / move, to the Dired in the other window    |
 | Dired      | =D=                            | Delete, to the macOS Trash                       |
+| Dired      | =TAB= / =S-TAB=                | Expand / collapse a folder in place (tree view)  |
+| Dired      | =.=                            | Show / hide dotfiles                             |
+| Dired      | =P=                            | Preview the file at point while moving (toggle)  |
+| Dired      | =E=                            | Open with the macOS app (Preview, browser...)    |
+| Dired      | =w= / =0 w=                    | Copy the file name / full path                   |
+| Dired      | =C-s=                          | Search file names only                           |
 | Remote     | =C-x C-f /ssh:user@host:/path= | Open a file over SSH (TRAMP)                     |
 | YAML       | =C-c c y=                      | Copy the key path, e.g. spec.containers[0].image |
 | Markdown   | =C-c '=                        | Edit the code block in its own mode              |
