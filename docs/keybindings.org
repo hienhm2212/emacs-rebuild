@@ -121,6 +121,11 @@ Prettier after save.
 | =C-c c s= (=SPC e s=) | xref-find-apropos         | Find a symbol by name in the project   |
 
 In HTML, ERB and JSX buffers, Emmet expands =div.card>ul>li*3= with =C-j=.
+
+*React / TypeScript:* on save, imports are organized (sorted, unused ones
+removed) by the language server, then Prettier formats the file. Grey
+inlay hints show return types and literal argument names (=C-c c h=
+toggles). ESLint problems show in flymake next to the TypeScript ones.
 Yasnippet expands a snippet key with =TAB= (=rfc=, =us=, =ue=, =uc=, =um=, =clg=).
 
 * Templates (web-mode)
@@ -145,15 +150,17 @@ Typing =<%= inserts =<% | %>=; typing =</= closes the open tag.
 * Tests
 =C-c t= uses the same letters in Ruby, Go and JS/TS.
 
-| Key       | Ruby (rspec-mode)      | Go (go-ts-mode)        | JS / TS (jest or vitest)      |
-|-----------+------------------------+------------------------+-------------------------------|
-| =C-c t t= | Spec at point          | Test function at point | it / test / describe at point |
-| =C-c t f= | This spec file         | This file              | This file                     |
-| =C-c t a= | Whole suite            | =go test ./...=        | Whole suite                   |
-| =C-c t r= | Rerun last             | Rerun last             | Rerun last                    |
-| =C-c t s= | user.rb ↔ user_spec.rb | foo.go ↔ foo_test.go   | Button.tsx ↔ Button.test.tsx  |
-| =C-c t p= | —                      | This package           | —                             |
-| =C-c t l= | Only last failures     | —                      | —                             |
+| Key       | Ruby (rspec-mode)      | Go (go-ts-mode)        | JS / TS (jest or vitest)            |
+|-----------+------------------------+------------------------+-------------------------------------|
+| =C-c t t= | Spec at point          | Test function at point | it / test / describe at point       |
+| =C-c t f= | This spec file         | This file              | This file                           |
+| =C-c t a= | Whole suite            | =go test ./...=        | Whole suite                         |
+| =C-c t r= | Rerun last             | Rerun last             | Rerun last                          |
+| =C-c t s= | user.rb ↔ user_spec.rb | foo.go ↔ foo_test.go   | Button.tsx ↔ Button.test.tsx        |
+| =C-c t p= | —                      | This package           | —                                   |
+| =C-c t l= | Only last failures     | —                      | =eslint --fix= this file            |
+| =C-c t c= | —                      | —                      | Type-check project (=tsc --noEmit=) |
+| =C-c t n= | —                      | —                      | Run a package.json script           |
 
 In the test output buffer, =M-g n= / =M-g p= (or =RET= on a line) jump to
 the failing line. A Ruby spec that stops at =binding.irb= or =debugger=
@@ -178,17 +185,18 @@ Inside Magit status: =s= stage, =u= unstage, =c c= commit, =P p= push,
 * Open, workspace and backend
 =C-c o p= gives each project its own tab, like a tmux session.
 
-| Key                          | Command               | What it does                                 |
-|------------------------------+-----------------------+----------------------------------------------|
-| =C-c o h=                    | dashboard-open        | Back to the start dashboard (home)           |
-| =C-c o p=                    | my/project-tab        | Open a project in its own tab (or switch)    |
-| =C-c o t=                    | eat-project           | Terminal at the project root, reused if open |
-| =C-c o T=                    | eat                   | Terminal in the current folder               |
-| =C-c o r=                    | inf-ruby-console-auto | rails console / bundle console / irb         |
-| =C-c o a=                    | my/project-api-file   | Open the project's api.org (HTTP requests)   |
-| =C-c o s=                    | sql-connect           | Connect to a database                        |
-| =C-c <left>= / =C-c <right>= | tab-bar-history       | Undo / redo window layout in this tab        |
-| =C-c d=                      | dape-global-map       | Debugger: breakpoints, step, continue        |
+| Key                          | Command               | What it does                                        |
+|------------------------------+-----------------------+-----------------------------------------------------|
+| =C-c o h=                    | dashboard-open        | Back to the start dashboard (home)                  |
+| =C-c o p=                    | my/project-tab        | Open a project in its own tab (or switch)           |
+| =C-c o t=                    | eat-project           | Terminal at the project root, reused if open        |
+| =C-c o T=                    | eat                   | Terminal in the current folder                      |
+| =C-c o r=                    | inf-ruby-console-auto | rails console / bundle console / irb                |
+| =C-c o a=                    | my/project-api-file   | Open the project's api.org (HTTP requests)          |
+| =C-c o s=                    | sql-connect           | Connect to a database                               |
+| =C-c o n=                    | my/npm-run            | Run a package.json script (npm / pnpm / yarn / bun) |
+| =C-c <left>= / =C-c <right>= | tab-bar-history       | Undo / redo window layout in this tab               |
+| =C-c d=                      | dape-global-map       | Debugger: breakpoints, step, continue               |
 
 - *Inside the terminal (eat):* =C-c C-e= switches to Emacs keys (copy,
   scroll); =C-c C-j= goes back to terminal keys.

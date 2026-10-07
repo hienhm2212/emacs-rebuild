@@ -1,7 +1,8 @@
 ;;; my-frontend.el --- My Frontend -*- lexical-binding: t -*-
 ;;; Commentary:
 ;; Frontend: React/TS (LSP from my-coding.el), project node_modules/.bin,
-;; ESLint, jest/vitest (C-c t ...), snippets, Emmet, CSS/HTML/JSON LSP, colors,
+;; ESLint, jest/vitest (C-c t ...), tsc and npm scripts, inlay hints, organize
+;; imports on save, snippets, Emmet, CSS/HTML/JSON LSP, colors,
 ;; web-mode for templates (Rails .html.erb, plain .html).
 ;; Prettier on save (apheleia) lives in my-coding.el.
 ;;; Code:
@@ -31,6 +32,33 @@
 
 (dolist (hook '(css-ts-mode-hook scss-mode-hook mhtml-mode-hook json-ts-mode-hook))
   (add-hook hook #'eglot-ensure))
+
+;; TypeScript inlay hints (grey types / parameter names, toggle: C-c c h).
+;; Added next to the gopls settings from my-go.el, not replacing them.
+(let ((hints '(:inlayHints (:includeInlayParameterNameHints "literals"
+                            :includeInlayFunctionLikeReturnTypeHints t
+                            :includeInlayPropertyDeclarationTypeHints t
+                            :includeInlayEnumMemberValueHints t))))
+  (setq-default eglot-workspace-configuration
+                (append (and (boundp 'eglot-workspace-configuration)
+                             (default-value 'eglot-workspace-configuration))
+                        (list :typescript hints :javascript hints))))
+
+;; Organize imports on save (sort, drop unused). Prettier (apheleia) still
+;; formats right after the save, so imports end up formatted too.
+(defvar my/js-organize-imports-on-save t
+  "Non-nil: organize imports with the language server before saving JS/TS.")
+
+(defun my/js-organize-imports ()
+  "Organize imports with eglot, if it runs here and the option is on."
+  (when (and my/js-organize-imports-on-save
+             (fboundp 'eglot-managed-p) (eglot-managed-p))
+    ;; errors when there is nothing to organize, must not block saving
+    (ignore-errors (eglot-code-action-organize-imports (point-min) (point-max)))))
+
+(dolist (mode my/js-modes)
+  (add-hook (intern (format "%s-hook" mode))
+            (lambda () (add-hook 'before-save-hook #'my/js-organize-imports nil t))))
 
 ;; ESLint. Eglot runs one server per buffer (typescript-language-server),
 ;; so ESLint comes in as a second flymake backend, after eglot set up flymake.
@@ -94,13 +122,77 @@
   (let ((default-directory (project-root (project-current t))))
     (compile (my/js-test-command))))
 
+;; Package manager from the lock file, so scripts run like in the terminal
+(defun my/js-package-manager (root)
+  "npm, pnpm, yarn or bun, guessed from the lock file in ROOT."
+  (cond ((file-exists-p (expand-file-name "pnpm-lock.yaml" root)) "pnpm")
+        ((file-exists-p (expand-file-name "yarn.lock" root)) "yarn")
+        ((seq-some (lambda (f) (file-exists-p (expand-file-name f root)))
+                   '("bun.lockb" "bun.lock"))
+         "bun")
+        (t "npm")))
+
+(defun my/js-project-root ()
+  "Directory of the nearest package.json, or an error."
+  (or (locate-dominating-file default-directory "package.json")
+      (user-error "No package.json above %s" default-directory)))
+
+(defun my/npm-run (script)
+  "Run a package.json SCRIPT (dev, build, lint...) in its own buffer.
+The buffer is interactive, so a dev server can be stopped with C-c C-c."
+  (interactive
+   (let* ((pkg (expand-file-name "package.json" (my/js-project-root)))
+          (scripts (with-temp-buffer
+                     (insert-file-contents pkg)
+                     (alist-get 'scripts (json-parse-buffer :object-type 'alist)))))
+     (unless scripts (user-error "No scripts in %s" pkg))
+     (list (completing-read
+            "Run script: "
+            (lambda (str pred action)
+              (if (eq action 'metadata)
+                  `(metadata (annotation-function
+                              . ,(lambda (name)
+                                   (concat "  " (alist-get (intern name) scripts)))))
+                (complete-with-action action (mapcar (lambda (s) (symbol-name (car s))) scripts)
+                                      str pred)))
+            nil t))))
+  (let* ((default-directory (my/js-project-root))
+         (pm (my/js-package-manager default-directory))
+         (compilation-buffer-name-function
+          (lambda (_) (format "*%s run %s*" pm script))))
+    (compile (format "%s run %s" pm script) t)))
+
+(defun my/js-typecheck ()
+  "Type-check the whole project with tsc; RET on an error jumps to it."
+  (interactive)
+  (let ((default-directory (my/js-project-root)))
+    (compile "npx tsc --noEmit --pretty false")))
+
+(defun my/eslint-fix-file ()
+  "Save, run eslint --fix on this file, reload it."
+  (interactive)
+  (unless buffer-file-name (user-error "Buffer has no file"))
+  (let ((eslint (or (executable-find "eslint")
+                    (user-error "eslint not found (node_modules/.bin or PATH)"))))
+    (save-buffer)
+    (if (zerop (call-process eslint nil "*eslint fix*" nil "--fix" buffer-file-name))
+        (message "eslint --fix: clean")
+      (message "eslint --fix: done, problems left are in flymake (C-c c d)"))
+    (revert-buffer t t t)))
+
 (defvar-keymap my-js-test-map
-  :doc "Tests for JS/TS (bound to C-c t in JS/TS buffers)."
+  :doc "Tests and checks for JS/TS (bound to C-c t in JS/TS buffers)."
   "t" #'my/js-test-at-point
   "f" #'my/js-test-file
   "a" #'my/js-test-all
   "r" #'recompile
-  "s" #'find-sibling-file)
+  "s" #'find-sibling-file
+  "c" #'my/js-typecheck      ; tsc --noEmit, whole project
+  "l" #'my/eslint-fix-file   ; eslint --fix this file
+  "n" #'my/npm-run)          ; pick a package.json script
+
+;; Scripts from any buffer of the project (CSS, JSON, README...)
+(keymap-set my-open-map "n" #'my/npm-run)
 
 (with-eval-after-load 'typescript-ts-mode
   (keymap-set typescript-ts-mode-map "C-c t" my-js-test-map)
