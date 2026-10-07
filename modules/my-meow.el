@@ -17,12 +17,24 @@
 ;;; Code:
 
 (defun my/meow-setup ()
-  "QWERTY layout, from meow's KEYBINDING_QWERTY.org."
+  "QWERTY layout, from meow's KEYBINDING_QWERTY.org.
+Works with the 1.5.0 release (GNU/NonGNU ELPA) and with meow master."
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-  (meow-motion-define-key
-   '("j" . meow-next)
-   '("k" . meow-prev)
-   '("<escape>" . ignore))
+  (if (fboundp 'meow-motion-define-key)
+      ;; meow master: SPC <key> falls back to the mode's own key by itself
+      (meow-motion-define-key
+       '("j" . meow-next)
+       '("k" . meow-prev)
+       '("<escape>" . ignore))
+    ;; meow 1.5.0 (the ELPA release): overwrite j/k, keep the originals
+    ;; reachable as SPC j / SPC k through H-j / H-k
+    (meow-motion-overwrite-define-key
+     '("j" . meow-next)
+     '("k" . meow-prev)
+     '("<escape>" . ignore))
+    (meow-leader-define-key
+     '("j" . "H-j")
+     '("k" . "H-k")))
   (meow-leader-define-key
    ;; Use SPC (0-9) for digit arguments.
    '("1" . meow-digit-argument)
