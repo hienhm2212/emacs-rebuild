@@ -72,7 +72,12 @@
          ("f" . eglot-format-buffer)
          ("d" . consult-flymake)
          ("n" . flymake-goto-next-error)
-         ("p" . flymake-goto-prev-error))
+         ("p" . flymake-goto-prev-error)
+         ;; Navigation (xref): same as M-. M-, M-? C-M-. but under SPC e
+         ("." . xref-find-definitions)
+         ("," . xref-go-back)
+         ("?" . xref-find-references)
+         ("s" . xref-find-apropos))
   :config
   ;; Ruby: always ruby-lsp (the default list may pick solargraph first)
   (add-to-list 'eglot-server-programs '((ruby-mode ruby-ts-mode) "ruby-lsp")))
