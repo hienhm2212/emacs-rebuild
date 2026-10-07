@@ -126,6 +126,14 @@ In HTML, ERB and JSX buffers, Emmet expands =div.card>ul>li*3= with =C-j=.
 removed) by the language server, then Prettier formats the file. Grey
 inlay hints show return types and literal argument names (=C-c c h=
 toggles). ESLint problems show in flymake next to the TypeScript ones.
+
+*Tailwind:* in projects whose =package.json= or =Gemfile= mentions
+=tailwindcss=, the Tailwind language server runs next to the main one
+(TypeScript, HTML/ERB, CSS) through =rass=: class completion, the CSS of a
+class on hover, color swatches, conflicting-class warnings. Needs
+=pip install rassumfrassum= and =npm i -g @tailwindcss/language-server=;
+without them the main server runs alone. After installing, restart the
+server with =M-x eglot-reconnect=.
 Yasnippet expands a snippet key with =TAB= (=rfc=, =us=, =ue=, =uc=, =um=, =clg=).
 
 * Templates (web-mode)

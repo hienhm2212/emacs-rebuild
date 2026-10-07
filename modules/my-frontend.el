@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;; Frontend: React/TS (LSP from my-coding.el), project node_modules/.bin,
 ;; ESLint, jest/vitest (C-c t ...), tsc and npm scripts, inlay hints, organize
-;; imports on save, snippets, Emmet, CSS/HTML/JSON LSP, colors,
+;; imports on save, Tailwind (via rass), snippets, Emmet, CSS/HTML/JSON LSP, colors,
 ;; web-mode for templates (Rails .html.erb, plain .html).
 ;; Prettier on save (apheleia) lives in my-coding.el.
 ;;; Code:
@@ -237,11 +237,49 @@ The buffer is interactive, so a dev server can be stopped with C-c C-c."
   (web-mode-enable-auto-pairing t)              ; <% -> <% | %>
   (web-mode-enable-auto-quoting nil))           ; electric-pair already adds the quotes
 
-;; HTML LSP (tag / attribute completion, hover docs) in web-mode too,
-;; same server as mhtml-mode; Ruby inside <% %> is not covered.
+;; Tailwind CSS: class completion, hover shows the CSS, color swatches,
+;; conflicting class warnings. Eglot runs one server per buffer, so in
+;; Tailwind projects the main server (typescript, html, css) and the
+;; Tailwind server are combined by rass (rassumfrassum, an LSP multiplexer).
+;; Install: pip install rassumfrassum
+;;          npm i -g @tailwindcss/language-server
+;; Without them, or in projects without Tailwind, the main server runs alone.
+(defun my/tailwind-project-p ()
+  "Non-nil when this project uses Tailwind (npm package or Rails gem)."
+  (let ((root (if-let* ((project (project-current))) (project-root project) default-directory)))
+    (seq-some (lambda (file)
+                (let ((path (expand-file-name file root)))
+                  (and (file-readable-p path)
+                       (with-temp-buffer
+                         (insert-file-contents path)
+                         (search-forward "tailwindcss" nil t)))))
+              '("package.json" "Gemfile"))))
+
+(defun my/eglot-with-tailwind (main)
+  "Eglot contact: server command MAIN, plus Tailwind via rass when it applies."
+  (lambda (&optional _interactive)
+    (if (and (my/tailwind-project-p)
+             (executable-find "rass")
+             (executable-find "tailwindcss-language-server"))
+        `("rass" "--" ,@main "--" "tailwindcss-language-server" "--stdio")
+      main)))
+
+;; Language ids as in eglot's own entries, so the servers know the file type
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-               '((web-mode :language-id "html") "vscode-html-language-server" "--stdio")))
+               `(((js-mode :language-id "javascript")
+                  (js-ts-mode :language-id "javascript")
+                  (tsx-ts-mode :language-id "typescriptreact")
+                  (typescript-ts-mode :language-id "typescript"))
+                 . ,(my/eglot-with-tailwind '("typescript-language-server" "--stdio"))))
+  ;; web-mode (ERB, HTML): HTML server for tags and attributes; Ruby inside
+  ;; <% %> is not covered
+  (add-to-list 'eglot-server-programs
+               `((web-mode :language-id "html")
+                 . ,(my/eglot-with-tailwind '("vscode-html-language-server" "--stdio"))))
+  (add-to-list 'eglot-server-programs
+               `(((css-mode :language-id "css") (css-ts-mode :language-id "css"))
+                 . ,(my/eglot-with-tailwind '("vscode-css-language-server" "--stdio")))))
 
 (defun my/web-mode-maybe-eglot ()
   "Start eglot in web-mode when the HTML language server is installed."
