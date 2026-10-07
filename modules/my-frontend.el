@@ -1,7 +1,8 @@
 ;;; my-frontend.el --- My Frontend -*- lexical-binding: t -*-
 ;;; Commentary:
 ;; Frontend: React/TS (LSP from my-coding.el), project node_modules/.bin,
-;; ESLint, jest/vitest (C-c t ...), snippets, Emmet, CSS/HTML/JSON LSP, colors.
+;; ESLint, jest/vitest (C-c t ...), snippets, Emmet, CSS/HTML/JSON LSP, colors,
+;; web-mode for templates (Rails .html.erb, plain .html).
 ;; Prettier on save (apheleia) lives in my-coding.el.
 ;;; Code:
 
@@ -127,10 +128,40 @@
   :ensure t
   :after yasnippet)
 
+;; Templates: HTML with Ruby (or other code) inside. One mode for the markup,
+;; the <% %> blocks and the <style>/<script> parts.
+;; Keys: C-c C-n jump to the matching tag, C-c C-f fold, C-c C-e r rename the
+;; element (both tags), C-c C-e w wrap, C-c C-e k kill, C-c C-e v unwrap.
+(use-package web-mode
+  :ensure t
+  :mode ("\\.erb\\'" "\\.html?\\'")
+  :custom
+  (web-mode-markup-indent-offset 2)
+  (web-mode-css-indent-offset 2)
+  (web-mode-code-indent-offset 2)
+  (web-mode-engines-alist '(("erb" . "\\.erb\\'")))
+  (web-mode-enable-current-element-highlight t) ; underline the tag pair around point
+  (web-mode-enable-auto-closing t)              ; </div> after typing </
+  (web-mode-enable-auto-pairing t)              ; <% -> <% | %>
+  (web-mode-enable-auto-quoting nil))           ; electric-pair already adds the quotes
+
+;; HTML LSP (tag / attribute completion, hover docs) in web-mode too,
+;; same server as mhtml-mode; Ruby inside <% %> is not covered.
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((web-mode :language-id "html") "vscode-html-language-server" "--stdio")))
+
+(defun my/web-mode-maybe-eglot ()
+  "Start eglot in web-mode when the HTML language server is installed."
+  (when (executable-find "vscode-html-language-server")
+    (eglot-ensure)))
+
+(add-hook 'web-mode-hook #'my/web-mode-maybe-eglot)
+
 ;; Emmet: div.card>ul>li*3 then C-j
 (use-package emmet-mode
   :ensure t
-  :hook ((mhtml-mode css-ts-mode scss-mode tsx-ts-mode js-ts-mode) . emmet-mode)
+  :hook ((mhtml-mode web-mode css-ts-mode scss-mode tsx-ts-mode js-ts-mode) . emmet-mode)
   :config
   ;; className= instead of class= in JSX
   (add-hook 'emmet-mode-hook
@@ -141,7 +172,7 @@
 ;; Show #ff0000 / rgb() / named colors with their color
 (use-package colorful-mode
   :ensure t
-  :hook ((css-ts-mode scss-mode mhtml-mode tsx-ts-mode) . colorful-mode))
+  :hook ((css-ts-mode scss-mode mhtml-mode web-mode tsx-ts-mode) . colorful-mode))
 
 (provide 'my-frontend)
 ;;; my-frontend.el ends here

@@ -120,8 +120,27 @@ Prettier after save.
 | =C-c c ?= (=SPC e ?=) | xref-find-references      | Find references                        |
 | =C-c c s= (=SPC e s=) | xref-find-apropos         | Find a symbol by name in the project   |
 
-In HTML and JSX buffers, Emmet expands =div.card>ul>li*3= with =C-j=.
+In HTML, ERB and JSX buffers, Emmet expands =div.card>ul>li*3= with =C-j=.
 Yasnippet expands a snippet key with =TAB= (=rfc=, =us=, =ue=, =uc=, =um=, =clg=).
+
+* Templates (web-mode)
+=.html.erb= (Rails views), =.html= and =.htm= open in web-mode: markup,
+=<% %>= blocks and =<style>= / =<script>= in one buffer, with Emmet,
+color previews, line numbers and the HTML language server when installed
+(=npm i -g vscode-langservers-extracted=).
+
+| Key         | Meow        | What it does                              |
+|-------------+-------------+-------------------------------------------|
+| =C-j=       |             | Expand Emmet: =div.card>ul>li*3=          |
+| =C-c C-n=   | =SPC c n=   | Jump to the matching tag                  |
+| =C-c C-f=   | =SPC c f=   | Fold / unfold the element                 |
+| =C-c C-e r= | =SPC c e r= | Rename the element (both tags)            |
+| =C-c C-e w= | =SPC c e w= | Wrap the selection in a tag               |
+| =C-c C-e v= | =SPC c e v= | Unwrap: remove the tags, keep the content |
+| =C-c C-e k= | =SPC c e k= | Kill the element                          |
+| =C-c C-e c= | =SPC c e c= | Clone the element                         |
+
+Typing =<%= inserts =<% | %>=; typing =</= closes the open tag.
 
 * Tests
 =C-c t= uses the same letters in Ruby, Go and JS/TS.
