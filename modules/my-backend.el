@@ -31,9 +31,21 @@
 ;; with repeat-mode: C-c d n n n steps three times.
 (use-package dape
   :ensure t
-  :bind-keymap ("C-c d" . dape-global-map)
+  :defer t
   :custom
   (dape-buffer-window-arrangement 'right)) ; locals/stack/breakpoints on the right
+
+;; Not :bind-keymap: it binds the keys that were just typed, and with meow's
+;; keypad (SPC d ...) that is a bare "d", so "d" turned into the dape prefix
+;; everywhere, minibuffer included. Bind C-c d by name instead.
+(defun my/dape-prefix ()
+  "Load dape on first use, bind C-c d to its keymap, read the next key from it."
+  (interactive)
+  (require 'dape)
+  (keymap-set mode-specific-map "d" dape-global-map)
+  (set-transient-map dape-global-map))
+
+(keymap-set mode-specific-map "d" #'my/dape-prefix)
 
 ;; Remote files: C-x C-f /ssh:user@host:/path
 (use-package tramp
