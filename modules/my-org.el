@@ -93,6 +93,9 @@
   (org-hide-emphasis-markers t)                ; *bold* shows as bold, no stars
   (org-ellipsis " ▾")
   (org-pretty-entities t)
+  ;; a_b stays "a_b" (user_id, my_var); only a_{b} / a^{b} become sub/superscript
+  (org-use-sub-superscripts '{})
+  (org-export-with-sub-superscripts '{})
   (org-startup-folded 'content)                ; open files showing headings only
   (org-return-follows-link t)                  ; RET on a link opens it
 
