@@ -60,7 +60,7 @@
   (add-hook (intern (format "%s-hook" mode))
             (lambda () (add-hook 'before-save-hook #'my/js-organize-imports nil t))))
 
-;; ESLint. Eglot runs one server per buffer (typescript-language-server),
+;; ESLint. Eglot runs one server per buffer (TypeScript),
 ;; so ESLint comes in as a second flymake backend, after eglot set up flymake.
 (use-package flymake-eslint
   :ensure t
@@ -255,14 +255,31 @@ The buffer is interactive, so a dev server can be stopped with C-c C-c."
                          (search-forward "tailwindcss" nil t)))))
               '("package.json" "Gemfile"))))
 
+;; TypeScript 7 (the native Go compiler) has no tsserver.js, which is all
+;; typescript-language-server wraps; it ships its own server: tsc --lsp.
+;; Its errors come only by "pull" (textDocument/diagnostic): eglot 1.20+
+;; (see my-coding.el). TypeScript 6 and older keep typescript-language-server.
+(defun my/ts-server-command ()
+  "Language server for the nearest TypeScript install, as a command list."
+  (let* ((root (locate-dominating-file default-directory "node_modules/typescript"))
+         (ts (and root (expand-file-name "node_modules/typescript/" root)))
+         (tsc (and root (expand-file-name "node_modules/.bin/tsc" root))))
+    (if (and ts
+             (not (file-exists-p (expand-file-name "lib/tsserver.js" ts)))
+             (file-executable-p tsc))
+        (list tsc "--lsp" "--stdio")              ; TypeScript 7+, project's own
+      '("typescript-language-server" "--stdio"))))
+
 (defun my/eglot-with-tailwind (main)
-  "Eglot contact: server command MAIN, plus Tailwind via rass when it applies."
+  "Eglot contact: server command MAIN, plus Tailwind via rass when it applies.
+MAIN is a command list, or a function returning one for this project."
   (lambda (&optional _interactive)
-    (if (and (my/tailwind-project-p)
-             (executable-find "rass")
-             (executable-find "tailwindcss-language-server"))
-        `("rass" "--" ,@main "--" "tailwindcss-language-server" "--stdio")
-      main)))
+    (let ((main (if (functionp main) (funcall main) main)))
+      (if (and (my/tailwind-project-p)
+               (executable-find "rass")
+               (executable-find "tailwindcss-language-server"))
+          `("rass" "--" ,@main "--" "tailwindcss-language-server" "--stdio")
+        main))))
 
 ;; Language ids as in eglot's own entries, so the servers know the file type
 (with-eval-after-load 'eglot
@@ -271,7 +288,7 @@ The buffer is interactive, so a dev server can be stopped with C-c C-c."
                   (js-ts-mode :language-id "javascript")
                   (tsx-ts-mode :language-id "typescriptreact")
                   (typescript-ts-mode :language-id "typescript"))
-                 . ,(my/eglot-with-tailwind '("typescript-language-server" "--stdio"))))
+                 . ,(my/eglot-with-tailwind #'my/ts-server-command)))
   ;; web-mode (ERB, HTML): HTML server for tags and attributes; Ruby inside
   ;; <% %> is not covered
   (add-to-list 'eglot-server-programs
