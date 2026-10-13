@@ -119,7 +119,19 @@
 (use-package apheleia
   :ensure t
   :hook ((js-ts-mode typescript-ts-mode tsx-ts-mode json-ts-mode css-ts-mode)
-         . apheleia-mode))
+         . apheleia-mode)
+  :custom
+  ;; Don't pass Emacs' indentation (--use-tabs / --tab-width): Emacs defaults
+  ;; to tabs, which overrode the project's .prettierrc. Prettier decides.
+  (apheleia-formatters-respect-indent-level nil)
+  :config
+  ;; Plain "prettier": the parser comes from the file name, like on the command
+  ;; line. apheleia's prettier-javascript forces --parser=babel-flow, which
+  ;; Prettier 4 no longer has ("Couldn't resolve parser"), and its -json one
+  ;; misses json-stringify for package.json.
+  (dolist (mode '(js-mode js-ts-mode typescript-ts-mode tsx-ts-mode
+                  json-ts-mode css-ts-mode))
+    (setf (alist-get mode apheleia-mode-alist) 'prettier)))
 
 (provide 'my-coding)
 ;;; my-coding.el ends here
