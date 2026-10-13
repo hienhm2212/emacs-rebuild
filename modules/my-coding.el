@@ -56,7 +56,19 @@
          ("M-n" . flymake-goto-next-error)
          ("M-p" . flymake-goto-prev-error)))
 
-;; Eglot
+;; Eglot. Emacs 30 ships eglot 1.17; pull diagnostics (the only way
+;; TypeScript 7's server reports errors) arrived in 1.20. Upgrade the
+;; built-in copy from GNU ELPA once; offline, keep the built-in and say so.
+(require 'package)
+(unless (package-installed-p 'eglot '(1 20))
+  (condition-case err
+      (let ((package-install-upgrade-built-in t))
+        (unless (assq 'eglot package-archive-contents)
+          (package-refresh-contents))
+        (package-install 'eglot))
+    (error (message "eglot upgrade skipped (%s); TypeScript 7 errors won't show"
+                    (error-message-string err)))))
+
 (use-package eglot
   :ensure nil
   :hook ((ruby-ts-mode . eglot-ensure)

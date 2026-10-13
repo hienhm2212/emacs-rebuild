@@ -127,6 +127,13 @@ removed) by the language server, then Prettier formats the file. Grey
 inlay hints show return types and literal argument names (=C-c c h=
 toggles). ESLint problems show in flymake next to the TypeScript ones.
 
+*TypeScript 7:* projects on TypeScript 7+ (no =tsserver.js=) use their own
+=node_modules/.bin/tsc --lsp --stdio=; older ones keep
+=typescript-language-server=. TypeScript 7 reports errors only on request
+(pull diagnostics), which needs eglot 1.20+: the config upgrades Emacs's
+built-in eglot from GNU ELPA once (check with =M-x eglot-version= or
+=C-h P eglot=).
+
 *Tailwind:* in projects whose =package.json= or =Gemfile= mentions
 =tailwindcss=, the Tailwind language server runs next to the main one
 (TypeScript, HTML/ERB, CSS) through =rass=: class completion, the CSS of a
