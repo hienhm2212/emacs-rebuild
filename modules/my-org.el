@@ -126,7 +126,10 @@
   :custom
   (denote-directory (my/org-file "notes/"))
   (denote-dired-directories (list (my/org-file "notes/")))
-  (denote-known-keywords '("go" "ruby" "rails" "react" "js" "sql" "devops" "bug" "til"))
+  ;; Categories first (what kind of note), then topics (what it is about)
+  (denote-known-keywords '("project" "bug" "idea" "learn" "research"
+                           "troubleshoot" "config" "perf" "ops"
+                           "go" "ruby" "rails" "react" "js" "sql" "devops" "til"))
   (denote-templates
    '((bug . "* Symptom\n\n* Reproduce\n\n* Root cause\n\n* Fix\n\n* Links\n")))
   :config
