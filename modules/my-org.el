@@ -131,7 +131,7 @@
                            "troubleshoot" "config" "perf" "ops"
                            "go" "ruby" "rails" "react" "js" "sql" "devops" "til"))
   (denote-templates
-   '((bug . "* Symptom\n\n* Reproduce\n\n* Root cause\n\n* Fix\n\n* Links\n")))
+   '((bug . "* Symptom\n\n* Reproduce\n\n* Tried\n\n* Root cause\n\n* Fix\n\n* Links\n")))
   :config
   (denote-rename-buffer-mode 1))         ; buffer name = note title, not the long file name
 
@@ -142,7 +142,7 @@
   "Capture body for a bug note: denote front matter + bug sections.
 %a links back to the code line you were on when capturing."
   (let ((denote-org-capture-specifiers
-         "\n* Symptom\n%?\n\n* Reproduce\n\n* Root cause\n\n* Fix\n\n* Links\n%a\n"))
+         "\n* Symptom\n%?\n\n* Reproduce\n\n* Tried\n\n* Root cause\n\n* Fix\n\n* Links\n%a\n"))
     (denote-org-capture)))
 
 (defun my/denote-bug ()
