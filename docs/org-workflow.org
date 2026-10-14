@@ -22,6 +22,7 @@
 ** Phím meow tương ứng
 Với meow, thay =C-c= bằng =SPC=: =C-c n c= → =SPC n c=, =C-c C-t= → =SPC c t=,
 =C-c C-w= → =SPC c w=. Cheat sheet đầy đủ: [[file:keybindings.org][keybindings.org]].
+Một ngày làm việc mẫu: [[file:daily-workflow.org][daily-workflow.org]].
 
 * Tiến độ [0/5]
 - [ ] Bài 0 — Chuẩn bị thư mục
