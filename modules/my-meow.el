@@ -125,6 +125,7 @@ Works with the 1.5.0 release (GNU/NonGNU ELPA) and with meow master."
   :demand t
   :config
   (my/meow-setup)
+  (meow-setup-indicator)                 ; NORMAL / INSERT / MOTION in the mode line
   ;; Buffers where you type into a program, not edit text: start in INSERT
   (dolist (rule '((eat-mode . insert)          ; terminal (C-c o t)
                   (agent-shell-mode . insert)  ; AI agents (C-c a ...)

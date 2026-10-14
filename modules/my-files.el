@@ -61,9 +61,17 @@
   (wdired-create-parent-directories t))
 
 ;; Icons per file type (same Nerd Font as the dashboard)
+(defvar my/terminal-nerd-font nil
+  "Non-nil if your terminal uses a Nerd Font: show file icons in `emacs -nw' too.")
+
+(defun my/nerd-icons-dired-maybe ()
+  "Icons in GUI frames; in a terminal only with a Nerd Font, else they show as boxes."
+  (when (or (display-graphic-p) my/terminal-nerd-font)
+    (nerd-icons-dired-mode 1)))
+
 (use-package nerd-icons-dired
   :ensure t
-  :hook (dired-mode . nerd-icons-dired-mode))
+  :hook (dired-mode . my/nerd-icons-dired-maybe))
 
 ;; Colors: folders, executables, symlinks, ignored files, dates, sizes
 (use-package diredfl

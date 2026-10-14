@@ -56,10 +56,12 @@
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref))
 
-;; Act on the candidate under point (C-.), export results (C-. E)
+;; Act on the candidate under point (C-.), export results (C-. E).
+;; M-o does the same in a terminal, which cannot send C-.
 (use-package embark
   :ensure t
   :bind (("C-." . embark-act)
+         ("M-o" . embark-act)
          ("C-h B" . embark-bindings)))
 
 (use-package embark-consult

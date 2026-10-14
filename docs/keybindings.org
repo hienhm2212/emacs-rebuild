@@ -33,6 +33,7 @@ repeat-mode lets you repeat the last key of a sequence, as in =C-x o o o=.
 Single keys instead of chords. NORMAL: keys are commands. INSERT: typing,
 =ESC= goes back. MOTION (Magit, Dired, dashboard, agenda): their own keys
 plus =j= / =k= and =SPC=. Terminal, AI agents and REPLs start in INSERT.
+The current state shows at the left of the mode line (=NORMAL=, =INSERT=...).
 
 | Key in NORMAL   | What it does                                 |
 |-----------------+----------------------------------------------|
@@ -90,6 +91,7 @@ toggles them in the current buffer. For relative numbers, set
 | =M-g g=   | consult-goto-line      | Go to line, with preview                   |
 | =M-g i=   | consult-imenu          | Jump to a symbol                           |
 | =C-.=     | embark-act             | Actions on the candidate or thing at point |
+| =M-o=     | embark-act             | Same, works in a terminal (=emacs -nw=)    |
 | =C-. E=   | embark-export          | Export results to a buffer                 |
 
 - In the minibuffer, type space-separated words in any order (orderless):
@@ -319,3 +321,21 @@ Dired works like oil.nvim: open the folder, edit names as text, apply.
 | Any buffer | =C-x o o o=                    | Cycle windows (repeat-mode)                      |
 
 YAML buffers also show the key path at point in the header line, live.
+
+* Terminal (emacs -nw)
+The config works in a terminal too (=modules/my-terminal.el=):
+- Mouse: click, scroll, drag to select.
+- Kill / yank use the system clipboard (macOS =pbcopy=; Linux needs
+  =wl-clipboard= or =xclip= installed).
+- Completion popup (corfu) shows in the terminal.
+- Cursor: bar in INSERT, block in NORMAL.
+- =C-.= cannot be typed in most terminals: use =M-o= for embark.
+- Dired icons are off unless the terminal font is a Nerd Font; then add
+  =(setq my/terminal-nerd-font t)= to =custom.el=.
+
+Set up the terminal once:
+- macOS: Option as Meta, or =M-x= will not work. Terminal.app: Settings >
+  Profiles > Keyboard > "Use Option as Meta key". iTerm2: Profiles > Keys >
+  Left Option key = Esc+.
+- Use a true-color terminal (Ghostty, iTerm2, WezTerm, kitty); Terminal.app
+  only has 256 colors, so the theme looks off.
