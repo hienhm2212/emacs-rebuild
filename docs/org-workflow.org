@@ -139,7 +139,8 @@ Với meow, thay =C-c= bằng =SPC=: =C-c n c= → =SPC n c=, =C-c C-t= → =SPC
   - [ ] Viết 3 ghi chú về thứ bạn đang học, dùng từ khoá có sẵn
         (=go=, =rust=, =react=, =til=...).
   - [ ] Từ một ghi chú, link sang ghi chú khác (=C-c n i=).
-  - [ ] Gặp một bug thật: =C-c n b=, điền Symptom → Root cause → Fix.
+  - [ ] Gặp một bug thật: =C-c n b=, điền Symptom → Tried → Root cause → Fix
+        (Tried: ghi cả cái đã thử mà không work).
   - [ ] Một tháng sau, tìm lại ghi chú đó bằng =C-c n s=.
 - Kiểm tra :: Mở =~/org/notes/= trong Dired: tên file có ngày, tiêu đề, từ khoá.
 
