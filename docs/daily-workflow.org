@@ -1,0 +1,81 @@
+#+TITLE: Một ngày làm việc với Org — kiểu Inkdrop
+#+DATE: 2026-10-14
+#+STARTUP: overview
+
+* Ý tưởng
+Takuya (craftzdog) dùng Inkdrop như nhật ký làm việc của dev:
+1. Mỗi project là một notebook.
+2. Mỗi task hoặc bug là một note, có trạng thái (Active → Completed).
+3. Vừa làm vừa ghi: đã thử gì, lỗi gì, link nào. Ghi để nhớ hộ mình,
+   không cần viết đẹp.
+4. Xong việc thì đổi trạng thái. Note vẫn còn đó để tìm lại sau này.
+
+Config này làm y như vậy bằng Org + Denote. Phím ghi dạng meow (=SPC=);
+không dùng meow thì thay =SPC= bằng =C-c= (=SPC n d= → =C-c n d=).
+Bài tập từng tuần: [[file:org-workflow.org][org-workflow.org]].
+Mọi phím: [[file:keybindings.org][keybindings.org]].
+
+* Inkdrop → Org
+| Inkdrop               | Ở đây                                                    | Phím                        |
+|-----------------------+----------------------------------------------------------+-----------------------------|
+| Notebook theo project | =~/org/projects/*.org= (công ty: =~/work-org/projects/=) | =SPC n p= mở, =SPC n P= tạo |
+| Trạng thái notebook   | =#+STATUS: active / hold / done / dropped=               | =SPC n S=                   |
+| Note cho task         | Heading =TODO= / =NEXT= trong file project               | =SPC n c p=                 |
+| Ghi log khi làm       | Mục =* Log= của project                                  | =SPC n c L=                 |
+| Note bug              | Denote note, từ khoá =bug=                               | =SPC n b= hoặc =SPC n c b=  |
+| Note kiến thức        | Denote note (=go=, =rails=, =til=...)                    | =SPC n n=                   |
+| Tag                   | Từ khoá Denote (=__bug_rails= trong tên file)            | khi tạo note, =SPC n r=     |
+| Ô tìm kiếm            | Tìm chữ trong mọi file / tìm note theo tên               | =SPC n s= / =SPC n f=       |
+| Sidebar "đang làm gì" | Org dashboard: Agenda, NEXT, WAIT, Inbox                 | =SPC n d=                   |
+
+* Một ngày, ví dụ cụ thể
+** Sáng (2 phút)
+- =SPC n d=: lịch hôm nay, việc =NEXT=, việc đang chờ người khác.
+- Chọn tối đa 3 việc cho hôm nay.
+
+** Nhận task "Sửa lỗi export CSV bị chậm"
+- =SPC n c p=, chọn project, ghi =TODO Fix CSV export chậm=.
+- Bắt đầu làm: đổi sang =NEXT= (=SPC c t=, hoặc =t= trong agenda).
+
+** Trong lúc debug — phần "Takuya" nhất
+- Đứng ở dòng code nghi ngờ, bấm =SPC n c b=. Note bug có link =%a= trỏ về
+  đúng dòng đó (mở lại bằng =SPC c o=).
+- Vừa thử vừa ghi vào *Tried*, kể cả cái không work:
+  #+begin_src org
+,* Tried
+- Thêm index cho orders.user_id → không đổi (vẫn 8s)
+- Bật bullet gem → thấy N+1 ở line_items
+  #+end_src
+- Tìm ra nguyên nhân: điền *Root cause* và *Fix*, lưu bằng =SPC c c=.
+
+** Họp xong / có quyết định
+- =SPC n c L= ghi vào =* Log= của project:
+  "Chốt dùng =find_each= thay vì =all=, lý do: memory".
+- Quyết định lớn thì ghi thêm vào =* Decisions=: làm gì và *tại sao*.
+
+** Xong task
+- Đổi =NEXT= → =DONE=. Org tự thêm dòng =CLOSED:= kèm thời điểm.
+
+** Học được gì đáng nhớ
+- =SPC n n=, tiêu đề "Rails find_each vs all", từ khoá =rails til=.
+- Từ note bug, chèn link sang note này: =SPC n i=.
+
+** Cuối ngày
+- =SPC n o=: dọn inbox về 0 (refile =SPC c w=, lên lịch =SPC c s=, hoặc xoá).
+- =SPC n g=: đồng bộ =~/org= (không đụng =~/work-org=).
+
+** Thứ Sáu
+- =SPC n w=: review tuần theo checklist.
+- Project không đụng tới tuần này: =SPC n S= → =hold=.
+
+* Khác Inkdrop ở đâu
+- Note Denote không có trạng thái Active/Completed. Trạng thái nằm ở *task*
+  (=TODO= / =DONE=) trong file project; note bug là hồ sơ để tra lại.
+- Tìm lại note bug: =SPC n f= rồi gõ =_bug=, hoặc =SPC n s= tìm theo chữ.
+- Không có sidebar cố định: =SPC n d= thay cho nó. Xem mọi note thì mở
+  =~/org/notes/= trong Dired.
+
+* Sau 2 tuần, tự hỏi
+- Có hay phải đi tìm note bug "đang mở" không?
+- Có muốn một bảng (board) chia note theo trạng thái không?
+Nếu cả hai là "có" thì mới đáng làm board. Nếu không, workflow này là đủ.

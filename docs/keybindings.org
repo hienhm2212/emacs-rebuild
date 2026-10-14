@@ -3,6 +3,7 @@
 #+STARTUP: overview
 
 Learning the Org workflow step by step: [[file:org-workflow.org][org-workflow.org]].
+A day in practice (Inkdrop-style): [[file:daily-workflow.org][daily-workflow.org]].
 
 Keys added by this config, grouped by leader prefix. Press a prefix and
 wait: which-key lists what comes next. =C-h B= searches every active key.
