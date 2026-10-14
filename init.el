@@ -41,5 +41,6 @@
 (require 'my-org-projects)
 (require 'my-ai)
 (require 'my-meow)      ; modal editing, after the C-c groups it points to
+(require 'my-terminal)  ; emacs -nw: mouse, clipboard, corfu popup
 (require 'my-dashboard) ; last: shows org, projects, AI from the modules above
 
