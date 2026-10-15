@@ -3,8 +3,23 @@
 ;; This file is the UI of my Emacs
 ;;; Code:
 
-;; Theme (built-in, load-theme does not need use-package/require)
-(load-theme 'modus-operandi-tinted :no-confirm)
+;; Theme: Ef themes (Protesilaos, built on the Modus themes), dark by default.
+;; M-x ef-themes-select tries another one with preview (C-u: keep the current
+;; one while you pick); to keep it, set `my/theme' in custom.el:
+;;   (setq my/theme 'ef-night)
+;; Dark: ef-dark ef-night ef-owl ef-dream ef-elea-dark ef-maris-dark ef-bio ...
+;; M-x ef-themes-list-colors shows a theme's palette.
+(defvar my/theme 'ef-dark
+  "Ef theme loaded at startup.")
+
+(use-package ef-themes
+  :ensure t                             ; pulls modus-themes 5 (Emacs ships 4.x)
+  :demand t
+  :init
+  ;; Modus commands (modus-themes-rotate...) only offer the Ef themes
+  (ef-themes-take-over-modus-themes-mode 1)
+  :config
+  (modus-themes-load-theme my/theme))
 
 ;; Show next keys after a prefix
 (which-key-mode 1)
