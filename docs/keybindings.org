@@ -149,12 +149,16 @@ Yasnippet expands a snippet key with =TAB= (=rfc=, =us=, =ue=, =uc=, =um=, =clg=
 * Templates (web-mode)
 =.html.erb= (Rails views), =.html= and =.htm= open in web-mode: markup,
 =<% %>= blocks and =<style>= / =<script>= in one buffer, with Emmet,
-color previews, line numbers and the HTML language server when installed
-(=npm i -g vscode-langservers-extracted=).
+color previews, line numbers and the HTML language server when installed.
+
+*Completion (tags, attributes, CSS properties, also in =<style>=) needs the
+language servers:* =npm i -g vscode-langservers-extracted=, then reopen the
+file. Without them Emacs says so once in the echo area.
 
 | Key         | Meow        | What it does                              |
 |-------------+-------------+-------------------------------------------|
-| =C-j=       |             | Expand Emmet: =div.card>ul>li*3=          |
+| =TAB=       |             | Expand Emmet (=ul>li*3=, =.card=, =!=)    |
+| =C-j=       |             | Expand Emmet, any Emmet buffer (JSX, CSS) |
 | =C-c C-n=   | =SPC c n=   | Jump to the matching tag                  |
 | =C-c C-f=   | =SPC c f=   | Fold / unfold the element                 |
 | =C-c C-e r= | =SPC c e r= | Rename the element (both tags)            |
@@ -164,6 +168,10 @@ color previews, line numbers and the HTML language server when installed
 | =C-c C-e c= | =SPC c e c= | Clone the element                         |
 
 Typing =<%= inserts =<% | %>=; typing =</= closes the open tag.
+
+TAB expands only an Emmet abbreviation alone on its line (=div=, =ul>li*3=,
+=.card=, =!= for an HTML5 page); on plain text, inside a tag or in
+=<style>= / =<script>= it indents and completes as usual.
 
 * Tests
 =C-c t= uses the same letters in Ruby, Go and JS/TS.
