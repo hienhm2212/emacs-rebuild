@@ -22,6 +22,23 @@
   (add-hook (intern (format "%s-hook" mode)) #'my/node-modules-bin))
 
 ;; LSP for CSS/SCSS/HTML/JSON: npm i -g vscode-langservers-extracted
+;; It gives tag, attribute and CSS property completion (also inside <style>),
+;; hover docs and errors. The servers only offer completion to editors that
+;; take snippets, which yasnippet (below) provides.
+(defvar my/web-lsp-hint-shown nil
+  "Non-nil once the \"install the HTML/CSS server\" hint was shown.")
+
+(defun my/web-lsp-maybe ()
+  "Start eglot for HTML/CSS/JSON, or say once how to install the servers."
+  (if (executable-find "vscode-html-language-server")
+      (eglot-ensure)
+    (unless my/web-lsp-hint-shown
+      (setq my/web-lsp-hint-shown t)
+      ;; after find-file's own messages, so it stays visible
+      (run-with-idle-timer
+       0.5 nil #'message
+       "No HTML/CSS completion: npm i -g vscode-langservers-extracted, then reopen the file"))))
+
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
                '((css-mode css-ts-mode scss-mode) "vscode-css-language-server" "--stdio"))
@@ -31,7 +48,7 @@
                '((json-ts-mode js-json-mode) "vscode-json-language-server" "--stdio")))
 
 (dolist (hook '(css-ts-mode-hook scss-mode-hook mhtml-mode-hook json-ts-mode-hook))
-  (add-hook hook #'eglot-ensure))
+  (add-hook hook #'my/web-lsp-maybe))
 
 ;; TypeScript inlay hints (grey types / parameter names, toggle: C-c c h).
 ;; Added next to the gopls settings from my-go.el, not replacing them.
@@ -298,23 +315,48 @@ MAIN is a command list, or a function returning one for this project."
                `(((css-mode :language-id "css") (css-ts-mode :language-id "css"))
                  . ,(my/eglot-with-tailwind '("vscode-css-language-server" "--stdio")))))
 
-(defun my/web-mode-maybe-eglot ()
-  "Start eglot in web-mode when the HTML language server is installed."
-  (when (executable-find "vscode-html-language-server")
-    (eglot-ensure)))
+(add-hook 'web-mode-hook #'my/web-lsp-maybe)
 
-(add-hook 'web-mode-hook #'my/web-mode-maybe-eglot)
-
-;; Emmet: div.card>ul>li*3 then C-j
+;; Emmet: div.card>ul>li*3 then C-j (any Emmet buffer), or TAB in HTML.
+;; ! then TAB = HTML5 page skeleton.
 (use-package emmet-mode
   :ensure t
   :hook ((mhtml-mode web-mode css-ts-mode scss-mode tsx-ts-mode js-ts-mode) . emmet-mode)
+  :custom
+  (emmet-indentation 2)                 ; same as web-mode-markup-indent-offset
   :config
   ;; className= instead of class= in JSX
   (add-hook 'emmet-mode-hook
             (lambda ()
               (when (derived-mode-p 'tsx-ts-mode 'js-ts-mode)
                 (setq-local emmet-expand-jsx-className? t)))))
+
+(defun my/emmet-abbrev-p ()
+  "Non-nil when the text from the indentation to point is an Emmet abbreviation.
+It must have no spaces and either use Emmet syntax (. # > + * [ { ( ! $)
+or be a known tag: \"div\", \"ul>li*3\", \".card\" yes; \"Hello world\" no."
+  (let ((text (buffer-substring-no-properties
+               (save-excursion (back-to-indentation) (point)) (point))))
+    (and (not (string-empty-p text))
+         (not (string-match-p "[[:space:]<\"'=]" text)) ; not inside a tag or text
+         (or (not (derived-mode-p 'web-mode))           ; <style>/<script>/<% %>: no
+             (member (web-mode-language-at-pos (1- (point))) '("html" "")))
+         (or (string-match-p "[.#>+*[{(!$]" text)
+             (and (boundp 'emmet-tag-settings-table)
+                  (gethash text emmet-tag-settings-table))))))
+
+(defun my/emmet-expand-or-tab ()
+  "TAB in HTML: expand an Emmet abbreviation, else indent or complete as usual."
+  (interactive)
+  (if (and (bound-and-true-p emmet-mode) (my/emmet-abbrev-p))
+      (emmet-expand-line nil)
+    (indent-for-tab-command)))
+
+;; In the major mode maps: yasnippet's TAB still runs first and falls back here
+(with-eval-after-load 'web-mode
+  (keymap-set web-mode-map "TAB" #'my/emmet-expand-or-tab))
+(with-eval-after-load 'mhtml-mode
+  (keymap-set mhtml-mode-map "TAB" #'my/emmet-expand-or-tab))
 
 ;; Show #ff0000 / rgb() / named colors with their color
 (use-package colorful-mode
