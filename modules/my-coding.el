@@ -3,19 +3,22 @@
 ;; This file is the Coding of my Emacs
 ;;; Code:
 
-;; Treesiter
-(setq treesit-language-source-alist
-      ;; Pinned to versions that match Emacs 30 font-lock queries.
-      '((go "https://github.com/tree-sitter/tree-sitter-go" "v0.20.0")
-        (ruby "https://github.com/tree-sitter/tree-sitter-ruby" "v0.20.1")
-        (bash "https://github.com/tree-sitter/tree-sitter-bash" "v0.20.5")
-        (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "v0.20.1" "src")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
-        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src")
-        (rust "https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2")
-        (css "https://github.com/tree-sitter/tree-sitter-css" "v0.20.0")
-        (json "https://github.com/tree-sitter/tree-sitter-json" "v0.20.2")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0")))
+;; Tree-sitter grammars. Emacs 31+ modes register the grammar version they
+;; were tested with; Emacs 30 has none, so pin versions that match its
+;; font-lock queries. (Pins on Emacs 31 would win and break its queries:
+;; "Emacs cannot compile every font-lock rules" warnings.)
+(when (< emacs-major-version 31)
+  (setq treesit-language-source-alist
+        '((go "https://github.com/tree-sitter/tree-sitter-go" "v0.20.0")
+          (ruby "https://github.com/tree-sitter/tree-sitter-ruby" "v0.20.1")
+          (bash "https://github.com/tree-sitter/tree-sitter-bash" "v0.20.5")
+          (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "v0.20.1" "src")
+          (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src")
+          (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src")
+          (rust "https://github.com/tree-sitter/tree-sitter-rust" "v0.21.2")
+          (css "https://github.com/tree-sitter/tree-sitter-css" "v0.20.0")
+          (json "https://github.com/tree-sitter/tree-sitter-json" "v0.20.2")
+          (yaml "https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
 
 ;; Old mode -> ts-mode (only for modes that ship with Emacs)
 (setq major-mode-remap-alist
@@ -36,14 +39,22 @@
                 ("\\.ya?ml\\'" . yaml-ts-mode))
               auto-mode-alist))
 
-;; funtions
-(defun my/treesit-install-all()
-  "Install all missing tree-sitter grammars."
-  (interactive)
-  (dolist (entry treesit-language-source-alist)
-    (let ((lang (car entry)))
-      (unless (treesit-language-available-p lang)
-	(treesit-install-language-grammar lang))))
+(defconst my/treesit-languages
+  '(go gomod ruby bash javascript jsdoc typescript tsx rust css json yaml)
+  "Grammars this config uses (gomod and jsdoc only on Emacs 31+).")
+
+(defun my/treesit-install-all (&optional reinstall)
+  "Install missing tree-sitter grammars; with C-u, REINSTALL all of them.
+Reinstall after upgrading Emacs, when a mode warns about a grammar mismatch."
+  (interactive "P")
+  ;; Emacs 31: each mode adds its grammar source when it loads
+  (dolist (lib '(go-ts-mode ruby-ts-mode sh-script js typescript-ts-mode
+                 rust-ts-mode css-mode json-ts-mode yaml-ts-mode))
+    (require lib nil t))
+  (dolist (lang my/treesit-languages)
+    (when (and (assq lang treesit-language-source-alist)
+               (or reinstall (not (treesit-language-available-p lang))))
+      (treesit-install-language-grammar lang)))
   (message "Grammar check done"))
 
 ;; Flymake (eglot turns it on and feeds it LSP diagnostics)
