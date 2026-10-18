@@ -146,6 +146,12 @@ without them the main server runs alone. After installing, restart the
 server with =M-x eglot-reconnect=.
 Yasnippet expands a snippet key with =TAB= (=rfc=, =us=, =ue=, =uc=, =um=, =clg=).
 
+*Tree-sitter grammars:* =M-x my/treesit-install-all= installs the missing
+ones. After upgrading Emacs, a warning like "Emacs cannot compile every
+font-lock rules ... mismatch between the grammar and the rules" means a
+grammar is too old: =C-u M-x my/treesit-install-all= reinstalls them all at
+the version that Emacs release was tested with.
+
 * Templates (web-mode)
 =.html.erb= (Rails views), =.html= and =.htm= open in web-mode: markup,
 =<% %>= blocks and =<style>= / =<script>= in one buffer, with Emmet,

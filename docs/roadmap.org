@@ -612,7 +612,7 @@ git clone git@github.com:<you>/org.git ~/org
 * Ghi chú macOS
 - Cài Emacs: =brew install --cask emacs= hoặc =emacs-plus= (tap =d12frosted/emacs-plus=). Chọn bản 30 trở lên.
 - Phím: Option = Meta, Command = Super, Right Option giữ nguyên để gõ ký tự đặc biệt — đã đặt trong [[file:../modules/my-env.el][my-env.el]].
-- Build grammar tree-sitter cần compiler: =xcode-select --install=. Grammar trên mac là file =.dylib= (đã có trong =.gitignore=) — chạy lại =M-x my/treesit-install-all= trên mỗi máy.
+- Build grammar tree-sitter cần compiler: =xcode-select --install=. Grammar trên mac là file =.dylib= (đã có trong =.gitignore=) — chạy lại =M-x my/treesit-install-all= trên mỗi máy. Lên Emacs mới mà có cảnh báo "font-lock rules mismatch" thì =C-u M-x my/treesit-install-all= để cài lại đúng phiên bản.
 - Cài công cụ: =brew install ripgrep coreutils fd=.
 - PATH: GUI app trên mac không đọc =~/.zshrc= → =exec-path-from-shell= lo phần này; mise shims được thêm tay.
 
